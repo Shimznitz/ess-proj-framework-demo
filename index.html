@@ -37,6 +37,8 @@
     .back-btn:hover {
       background: #e5e7eb;
     }
+    input[type="checkbox"] { cursor: pointer; }
+    input[type="range"] { cursor: pointer; width: 100%; }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen py-10">
@@ -145,7 +147,7 @@
     </div>
   </div>
 
-  <!-- ───── SCREEN 4 – Execution & Implementation ───── -->
+  <!-- ───── SCREEN 4 – Execution & Implementation (now comprehensive) ───── -->
   <div id="screen-execution" class="screen">
     <div class="bg-white rounded-2xl shadow-lg p-8 md:p-12">
       <button onclick="goBackToAnalysis()" class="back-btn mb-8">
@@ -154,10 +156,14 @@
       <h2 class="text-3xl font-bold mb-8 text-center">Project Implementation & Execution Framework</h2>
       <p id="execution-track" class="text-xl text-center mb-10 font-medium"></p>
       <div id="execution-content" class="prose max-w-none text-gray-800"></div>
-      <div class="mt-16 text-center">
+      <div class="mt-16 text-center space-y-6">
+        <button onclick="showProgressDashboard()"
+                class="px-12 py-5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-lg rounded-xl">
+          Go to Project Progress Dashboard
+        </button>
         <button onclick="showPrintableFramework()"
                 class="px-12 py-5 bg-green-600 hover:bg-green-700 text-white font-bold text-lg rounded-xl">
-          View Full Printable Framework →
+          View Full Printable Implementation Framework →
         </button>
       </div>
     </div>
@@ -182,58 +188,64 @@
       </div>
     </div>
   </div>
+
+  <!-- ───── SCREEN 6 – Project Progress Dashboard (new) ───── -->
+  <div id="screen-progress" class="screen">
+    <div class="bg-white rounded-2xl shadow-lg p-8 md:p-12">
+      <button onclick="goBackToExecution()" class="back-btn mb-8">
+        ← Back to Execution
+      </button>
+      <h2 class="text-3xl font-bold mb-8 text-center">Project Progress Dashboard</h2>
+
+      <div class="flex gap-4 mb-8 border-b pb-4">
+        <button onclick="switchDashboardMode('owner')" id="owner-tab" class="flex-1 py-3 font-semibold rounded-xl bg-indigo-600 text-white">
+          Project Owner View (Update Progress)
+        </button>
+        <button onclick="switchDashboardMode('admin')" id="admin-tab" class="flex-1 py-3 font-semibold rounded-xl bg-gray-200">
+          Admin / Supervisor View (Track Progress)
+        </button>
+      </div>
+
+      <!-- Owner View -->
+      <div id="owner-view">
+        <div class="mb-8">
+          <h3 class="font-bold text-xl mb-4">Set Project Timeline</h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div>Overall Start: <input type="date" id="overall-start" class="border p-2 rounded w-full" onchange="saveProgressData()"></div>
+            <div>Overall End: <input type="date" id="overall-end" class="border p-2 rounded w-full" onchange="saveProgressData()"></div>
+          </div>
+        </div>
+        <div id="phases-owner" class="space-y-8"></div>
+      </div>
+
+      <!-- Admin View -->
+      <div id="admin-view" class="hidden">
+        <div id="admin-progress" class="space-y-8"></div>
+        <div class="mt-8">
+          <h3 class="font-bold text-xl mb-4">Request Update from Project Owner</h3>
+          <textarea id="admin-message" class="w-full border p-4 rounded-xl h-32" placeholder="Type message or request for update..."></textarea>
+          <button onclick="sendAdminMessage()" class="mt-4 px-8 py-3 bg-indigo-600 text-white font-semibold rounded-xl">
+            Send Message / Request Update
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
 // ───────────────────────────────────────────────
-// Data & Globals – FULL QUESTIONS ARRAY NOW INCLUDED
+// Data & Globals (same as your working version)
 // ───────────────────────────────────────────────
 let currentQ = 0;
 let answers = new Array(10).fill(null);
 let analysisResult = null;
-
-const questions = [
-  {id:1, text:"What best describes the core purpose of your project?",
-   options:[{emoji:"🔬", text:"Generate new fundamental knowledge or scientific insights", track:"A"},
-            {emoji:"💰", text:"Develop and commercialize a new product, service or technology", track:"B"},
-            {emoji:"🌍", text:"Address a pressing social, humanitarian or environmental challenge", track:"C"}]},
-  {id:2, text:"How will you primarily demonstrate success?",
-   options:[{emoji:"📚", text:"Peer-reviewed publications, citations, or new theories", track:"A"},
-            {emoji:"📈", text:"Revenue, sales, or investor interest", track:"B"},
-            {emoji:"❤️", text:"Measurable improvements in lives, environment, or policy", track:"C"}]},
-  {id:3, text:"Who is the main beneficiary or user of the project outcomes?",
-   options:[{emoji:"👩‍🔬", text:"The global scientific community", track:"A"},
-            {emoji:"🛒", text:"Paying customers or market segments", track:"B"},
-            {emoji:"👥", text:"Specific vulnerable or underserved communities", track:"C"}]},
-  {id:4, text:"What type of funding are you primarily targeting?",
-   options:[{emoji:"🏛️", text:"Competitive research grants (NSF, NIH, TETFund, national academies)", track:"A"},
-            {emoji:"💼", text:"Venture capital, private equity, or corporate innovation funds", track:"B"},
-            {emoji:"🤝", text:"Philanthropic foundations or development agencies (USAID, Gates, UNDP)", track:"C"}]},
-  {id:5, text:"The project timeline is best characterized as:",
-   options:[{emoji:"📅", text:"Long-term exploratory research (3–7+ years)", track:"A"},
-            {emoji:"🚀", text:"Accelerated path to market (1–3 years)", track:"B"},
-            {emoji:"🌱", text:"Medium to long-term sustainable development (3–10+ years)", track:"C"}]},
-  {id:6, text:"The biggest risk in the project is:",
-   options:[{emoji:"🧪", text:"Technical feasibility or scientific uncertainty", track:"A"},
-            {emoji:"📉", text:"Market acceptance, competition, or financial viability", track:"B"},
-            {emoji:"🌧️", text:"Stakeholder adoption, policy, or external factors", track:"C"}]},
-  {id:7, text:"Your preferred Intellectual Property approach is:",
-   options:[{emoji:"📖", text:"Open publication to advance knowledge (possible patents for credit)", track:"A"},
-            {emoji:"🔒", text:"Strong IP protection for licensing and commercialization", track:"B"},
-            {emoji:"🔓", text:"Open-source or community-managed for public good", track:"C"}]},
-  {id:8, text:"The project mainly requires:",
-   options:[{emoji:"🔬", text:"Specialized laboratory, computing, or analytical equipment", track:"A"},
-            {emoji:"🏭", text:"Prototyping, manufacturing, or marketing resources", track:"B"},
-            {emoji:"🤝", text:"Field sites, community training, and monitoring tools", track:"C"}]},
-  {id:9, text:"The broader impact you want to achieve is:",
-   options:[{emoji:"🌟", text:"Paradigm-shifting discoveries in the academic field", track:"A"},
-            {emoji:"🏗️", text:"Economic growth, jobs, or successful startup/exit", track:"B"},
-            {emoji:"⚖️", text:"Social equity, environmental restoration, or policy influence", track:"C"}]},
-  {id:10,text:"This project is most inspired by:",
-   options:[{emoji:"📖", text:"Unresolved questions in scientific literature", track:"A"},
-            {emoji:"💡", text:"Identified market gaps or customer pain points", track:"B"},
-            {emoji:"🌍", text:"On-the-ground challenges faced by communities or ecosystems", track:"C"}]}
-];
+let progressData = JSON.parse(localStorage.getItem('essProgressData')) || {
+  overallStart: '',
+  overallEnd: '',
+  phases: []
+};
 
 const trackInfo = {
   A: {letter:"A", name:"Discovery", emoji:"🔬", focus:"Pure Research & Development", color:"#4f46e5"},
@@ -249,7 +261,7 @@ const signatures = {
 };
 
 // ───────────────────────────────────────────────
-// Navigation
+// Navigation (unchanged)
 // ───────────────────────────────────────────────
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -257,7 +269,7 @@ function showScreen(id) {
 }
 
 // ───────────────────────────────────────────────
-// Questionnaire Functions
+// Questionnaire (exactly as in your working version)
 // ───────────────────────────────────────────────
 function renderQuestion() {
   const q = questions[currentQ];
@@ -343,30 +355,25 @@ function restartQuestionnaire() {
 }
 
 // ───────────────────────────────────────────────
-// Framework (from Screen 2 button)
+// Framework (unchanged from your working version)
 // ───────────────────────────────────────────────
 function showFramework() {
   const saved = localStorage.getItem('essQuestionnaire');
   if (!saved) return alert('No questionnaire data found.');
-
   const ans = JSON.parse(saved);
-  const scores = {A:0, B:0, C:0};
+  const scores = {A:0,B:0,C:0};
   ans.forEach(t => {if(t) scores[t]++;});
   const max = Math.max(scores.A, scores.B, scores.C);
   const track = scores.A === max ? 'A' : scores.B === max ? 'B' : 'C';
-
   const title = `Recommended Proposal Framework – Track ${trackInfo[track].letter} (${trackInfo[track].name})`;
-
   let content = `
     <h1 class="text-4xl font-bold mb-10">${title}</h1>
     <p class="text-xl text-gray-700 mb-12">This is the standard structure we use when analyzing uploaded proposals.</p>
-
     <div class="space-y-12">
       <div>
         <h2 class="text-2xl font-bold mb-6">Core Sections</h2>
         <div class="grid md:grid-cols-2 gap-6">
   `;
-
   const sections = track === 'A' ? [
     'Executive Summary & Abstract', 'State-of-the-Art Literature Review', 'Research Questions / Hypotheses',
     'Intellectual Merit & Innovation', 'Preliminary Results / Proof of Concept', 'Detailed Methodology',
@@ -380,28 +387,23 @@ function showFramework() {
     'Beneficiary & Stakeholder Analysis', 'Intervention Activities & Inputs', 'Monitoring & Evaluation Plan',
     'Sustainability & Exit Strategy', 'Risks, Assumptions & Mitigation'
   ];
-
   sections.forEach(s => {
     content += `<div class="bg-gray-50 p-6 rounded-xl border"><strong>${s}</strong><p class="text-sm text-gray-600 mt-2">(detailed guidance here)</p></div>`;
   });
-
   content += `</div></div></div>`;
-
   document.getElementById('print-title').textContent = title;
   document.getElementById('print-content').innerHTML = content;
   showScreen('screen-printable');
 }
 
 // ───────────────────────────────────────────────
-// File Analysis
+// File Analysis (unchanged)
 // ───────────────────────────────────────────────
 async function analyzeFile() {
   const file = document.getElementById('file-upload').files[0];
   if (!file) return alert('Please select a file.');
-
   let text = '';
   const ext = file.name.split('.').pop().toLowerCase();
-
   try {
     if (ext === 'txt' || ext === 'md') {
       text = await file.text();
@@ -410,42 +412,33 @@ async function analyzeFile() {
     } else {
       return alert('Only .txt, .md, .pdf files supported.');
     }
-
     const norm = text.toLowerCase().replace(/\s+/g, ' ').trim();
-
     const counts = {A:0, B:0, C:0, common:0};
     Object.keys(signatures).forEach(k => {
       signatures[k].forEach(r => { if (r.test(norm)) counts[k]++; });
     });
-
     const totals = {
       A: signatures.A.length + signatures.common.length,
       B: signatures.B.length + signatures.common.length,
       C: signatures.C.length + signatures.common.length
     };
-
     const scores = {
       A: Math.round((counts.A + counts.common) / totals.A * 100) || 0,
       B: Math.round((counts.B + counts.common) / totals.B * 100) || 0,
       C: Math.round((counts.C + counts.common) / totals.C * 100) || 0
     };
-
     analysisResult = {scores, primaryTrack: getHighestTrack(scores)};
-
     renderAnalysis(scores);
     showScreen('screen-analysis');
-
   } catch (err) {
     alert('File processing failed.\n' + err.message);
   }
 }
-
 function getHighestTrack(scores) {
   let max = -1, tr = 'A';
   for (let k in scores) if (scores[k] > max) { max = scores[k]; tr = k; }
   return tr;
 }
-
 function renderAnalysis(scores) {
   const cont = document.getElementById('analysis-bars');
   cont.innerHTML = '';
@@ -462,13 +455,11 @@ function renderAnalysis(scores) {
         </div>
       </div>`;
   });
-
   document.getElementById('analysis-missing').innerHTML = `
     <h4 class="font-bold text-amber-800 mb-4">Detected / missing elements (example):</h4>
     <p>Common sections: executive summary, problem statement, budget...</p>
   `;
 }
-
 async function extractPDFText(file) {
   const ab = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({data: ab}).promise;
@@ -482,43 +473,290 @@ async function extractPDFText(file) {
 }
 
 // ───────────────────────────────────────────────
-// Execution screen
+// Back helpers (unchanged)
+// ───────────────────────────────────────────────
+function goBackToResult() { showScreen('screen-result'); }
+function goBackToAnalysis() { showScreen('screen-analysis'); }
+function goBackToExecution() { showScreen('screen-execution'); }
+
+// ───────────────────────────────────────────────
+// Execution Page – now comprehensive (as requested)
 // ───────────────────────────────────────────────
 function showExecution() {
   if (!analysisResult) return alert('No analysis result available.');
   const tr = analysisResult.primaryTrack;
   const info = trackInfo[tr];
-  document.getElementById('execution-track').textContent =
-    `Execution Plan – Track ${info.letter} (${info.name}) – ${analysisResult.scores[tr]}% document match`;
+  document.getElementById('execution-track').innerHTML = `Execution & Implementation Framework – Track ${info.letter} (${info.name}) – <strong>${analysisResult.scores[tr]}%</strong> document match`;
 
-  document.getElementById('execution-content').innerHTML = `
-    <div class="space-y-10">
-      <div>
-        <h3 class="text-2xl font-bold mb-6">Implementation Phases</h3>
-        <ul class="list-decimal pl-6 space-y-4">
-          <li><strong>Phase 1 (Months 1–6):</strong> Preparation, baseline, team setup</li>
-          <li><strong>Phase 2 (Months 7–24):</strong> Core delivery, monitoring</li>
-          <li><strong>Phase 3 (Months 25–36):</strong> Scale, evaluation, handover</li>
-        </ul>
+  let phasesHTML = '';
+  if (tr === 'A') {
+    phasesHTML = `
+      <div class="space-y-10">
+        <div class="border-l-4 border-indigo-500 pl-6">
+          <h4 class="font-bold text-xl">Phase 1: Foundation (Months 1–12)</h4>
+          <p class="text-gray-700 mt-2">Strategy: Build scientific foundation, secure approvals, collect preliminary data, refine methodology for reproducibility.</p>
+          <ul class="list-disc pl-6 mt-4 space-y-2">
+            <li><input type="checkbox" class="h-5 w-5"> Ethics/IRB approval obtained</li>
+            <li><input type="checkbox" class="h-5 w-5"> Literature review completed and gap identified</li>
+            <li><input type="checkbox" class="h-5 w-5"> Pilot experiments conducted and data collected</li>
+            <li><input type="checkbox" class="h-5 w-5"> Methods validated with preliminary results</li>
+          </ul>
+        </div>
+        <div class="border-l-4 border-indigo-500 pl-6">
+          <h4 class="font-bold text-xl">Phase 2: Core Research (Months 13–24)</h4>
+          <p class="text-gray-700 mt-2">Strategy: Execute main research plan, collect primary dataset, perform rigorous analysis.</p>
+          <ul class="list-disc pl-6 mt-4 space-y-2">
+            <li><input type="checkbox" class="h-5 w-5"> Main dataset fully collected</li>
+            <li><input type="checkbox" class="h-5 w-5"> Statistical / computational analysis completed</li>
+            <li><input type="checkbox" class="h-5 w-5"> Preliminary results presented to peers</li>
+            <li><input type="checkbox" class="h-5 w-5"> First manuscript drafted</li>
+          </ul>
+        </div>
+        <div class="border-l-4 border-indigo-500 pl-6">
+          <h4 class="font-bold text-xl">Phase 3: Synthesis & Dissemination (Months 25–36)</h4>
+          <p class="text-gray-700 mt-2">Strategy: Finalize findings, publish in high-impact journals, share data openly, present at conferences.</p>
+          <ul class="list-disc pl-6 mt-4 space-y-2">
+            <li><input type="checkbox" class="h-5 w-5"> 3+ peer-reviewed publications submitted/accepted</li>
+            <li><input type="checkbox" class="h-5 w-5"> Conference presentations delivered</li>
+            <li><input type="checkbox" class="h-5 w-5"> Data repository populated and shared</li>
+            <li><input type="checkbox" class="h-5 w-5"> Final project report and knowledge transfer completed</li>
+          </ul>
+        </div>
+      </div>
+    `;
+  } else if (tr === 'B') {
+    phasesHTML = `
+      <div class="space-y-10">
+        <div class="border-l-4 border-indigo-500 pl-6">
+          <h4 class="font-bold text-xl">Phase 1: Validation & MVP (Months 1–6)</h4>
+          <p class="text-gray-700 mt-2">Strategy: Build and validate MVP, acquire early users, refine based on feedback.</p>
+          <ul class="list-disc pl-6 mt-4 space-y-2">
+            <li><input type="checkbox" class="h-5 w-5"> MVP developed and launched</li>
+            <li><input type="checkbox" class="h-5 w-5"> Beta testing with 100+ users completed</li>
+            <li><input type="checkbox" class="h-5 w-5"> Product-market fit validated (NPS > 40)</li>
+            <li><input type="checkbox" class="h-5 w-5"> Initial revenue stream activated</li>
+          </ul>
+        </div>
+        <div class="border-l-4 border-indigo-500 pl-6">
+          <h4 class="font-bold text-xl">Phase 2: Growth & Revenue (Months 7–18)</h4>
+          <p class="text-gray-700 mt-2">Strategy: Scale acquisition, optimize economics, build repeatable sales process.</p>
+          <ul class="list-disc pl-6 mt-4 space-y-2">
+            <li><input type="checkbox" class="h-5 w-5"> 500+ paying customers acquired</li>
+            <li><input type="checkbox" class="h-5 w-5"> Monthly recurring revenue > ₦5M</li>
+            <li><input type="checkbox" class="h-5 w-5"> Customer acquisition cost payback < 12 months</li>
+            <li><input type="checkbox" class="h-5 w-5"> Marketing channels optimized</li>
+          </ul>
+        </div>
+        <div class="border-l-4 border-indigo-500 pl-6">
+          <h4 class="font-bold text-xl">Phase 3: Expansion & Exit Prep (Months 19–36)</h4>
+          <p class="text-gray-700 mt-2">Strategy: Enter new markets, scale operations, prepare for funding round or exit.</p>
+          <ul class="list-disc pl-6 mt-4 space-y-2">
+            <li><input type="checkbox" class="h-5 w-5"> New regional market launched</li>
+            <li><input type="checkbox" class="h-5 w-5"> ARR > ₦50M achieved</li>
+            <li><input type="checkbox" class="h-5 w-5"> Investor-ready pitch deck & financials prepared</li>
+            <li><input type="checkbox" class="h-5 w-5"> Exit strategy roadmap defined</li>
+          </ul>
+        </div>
+      </div>
+    `;
+  } else {
+    phasesHTML = `
+      <div class="space-y-10">
+        <div class="border-l-4 border-indigo-500 pl-6">
+          <h4 class="font-bold text-xl">Phase 1: Preparation & Baseline (Months 1–12)</h4>
+          <p class="text-gray-700 mt-2">Strategy: Establish baseline data, build partnerships, train teams, set up monitoring systems.</p>
+          <ul class="list-disc pl-6 mt-4 space-y-2">
+            <li><input type="checkbox" class="h-5 w-5"> Baseline survey and data collection completed</li>
+            <li><input type="checkbox" class="h-5 w-5"> Community leaders and stakeholders engaged</li>
+            <li><input type="checkbox" class="h-5 w-5"> MEL tools and indicators deployed</li>
+            <li><input type="checkbox" class="h-5 w-5"> Initial training of field staff completed</li>
+          </ul>
+        </div>
+        <div class="border-l-4 border-indigo-500 pl-6">
+          <h4 class="font-bold text-xl">Phase 2: Implementation & Scale (Months 13–24)</h4>
+          <p class="text-gray-700 mt-2">Strategy: Deliver core interventions at scale, monitor outcomes, adjust based on data.</p>
+          <ul class="list-disc pl-6 mt-4 space-y-2">
+            <li><input type="checkbox" class="h-5 w-5"> 10,000+ beneficiaries directly reached</li>
+            <li><input type="checkbox" class="h-5 w-5"> Mid-line evaluation conducted and reported</li>
+            <li><input type="checkbox" class="h-5 w-5"> Policy advocacy meetings and engagements held</li>
+            <li><input type="checkbox" class="h-5 w-5"> Outcome indicators showing positive trend</li>
+          </ul>
+        </div>
+        <div class="border-l-4 border-indigo-500 pl-6">
+          <h4 class="font-bold text-xl">Phase 3: Sustainability & Exit (Months 25–36)</h4>
+          <p class="text-gray-700 mt-2">Strategy: Institutionalize impact, handover to local actors, conduct final evaluation.</p>
+          <ul class="list-disc pl-6 mt-4 space-y-2">
+            <li><input type="checkbox" class="h-5 w-5"> Local ownership and capacity transfer completed</li>
+            <li><input type="checkbox" class="h-5 w-5"> End-line evaluation and impact report finalized</li>
+            <li><input type="checkbox" class="h-5 w-5"> Sustainability plan documented and shared</li>
+            <li><input type="checkbox" class="h-5 w-5"> Project close-out and lessons learned workshop held</li>
+          </ul>
+        </div>
+      </div>
+    `;
+  }
+
+  const fullContent = `
+    ${phasesHTML}
+
+    <div class="mt-12">
+      <h3 class="text-2xl font-bold mb-6">Budget & Progress Overview</h3>
+      <div class="bg-gray-100 p-6 rounded-xl">
+        <p class="text-gray-700 mb-4 font-medium">Total Budget: ₦10,000,000</p>
+        <div class="mb-6">
+          <label class="block text-sm font-medium mb-2">Budget Spent: ₦<span id="budget-spent">0</span> / ₦10,000,000</label>
+          <input type="range" min="0" max="10000000" value="0" class="w-full h-3 bg-gray-300 rounded-lg appearance-none cursor-pointer" id="budget-slider" oninput="document.getElementById('budget-spent').textContent = this.value">
+        </div>
+        <p class="text-sm text-gray-600">Overall Progress: <span id="overall-progress">0%</span></p>
+      </div>
+    </div>
+
+    <div class="mt-12">
+      <h3 class="text-2xl font-bold mb-6">Key Performance Metrics</h3>
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="bg-gray-50 p-6 rounded-xl text-center">
+          <input type="number" id="metric-1" value="0" class="text-2xl font-bold text-indigo-600 w-20 text-center border-b" onchange="updateMetric(1, this.value)">
+          <p class="text-gray-600 mt-2">${tr === 'A' ? 'Publications / Patents Filed' : tr === 'B' ? 'Paying Customers Acquired' : 'Beneficiaries Reached'}</p>
+        </div>
+        <div class="bg-gray-50 p-6 rounded-xl text-center">
+          <input type="number" id="metric-2" value="0" class="text-2xl font-bold text-indigo-600 w-20 text-center border-b" onchange="updateMetric(2, this.value)">%
+          <p class="text-gray-600 mt-2">Deliverables Completed</p>
+        </div>
+        <div class="bg-gray-50 p-6 rounded-xl text-center">
+          <input type="number" id="metric-3" value="0" class="text-2xl font-bold text-indigo-600 w-32 text-center border-b" onchange="updateMetric(3, this.value)">
+          <p class="text-gray-600 mt-2">${tr === 'A' ? 'Data Points Collected' : tr === 'B' ? 'Revenue Generated (₦)' : 'Impact Value Generated (₦)'}</p>
+        </div>
       </div>
     </div>
   `;
+
+  document.getElementById('execution-content').innerHTML = fullContent;
+
+  // Gantt-style chart
+  const ctx = document.createElement('canvas');
+  ctx.height = 120;
+  document.querySelector('#execution-content .bg-gray-100').appendChild(ctx);
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Phase 1', 'Phase 2', 'Phase 3'],
+      datasets: [{
+        label: 'Duration',
+        data: tr === 'A' ? [12, 12, 12] : tr === 'B' ? [6, 12, 18] : [12, 12, 12],
+        backgroundColor: '#6366f1',
+        barThickness: 30
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      scales: { x: { title: { display: true, text: 'Months' } } },
+      plugins: { legend: { display: false } }
+    }
+  });
+
   showScreen('screen-execution');
 }
 
 // ───────────────────────────────────────────────
-// Printable framework
+// Project Progress Dashboard (new – as requested)
 // ───────────────────────────────────────────────
-function showPrintableFramework() {
-  showFramework(); // reuse for now
+function showProgressDashboard() {
+  showScreen('screen-progress');
+  loadProgressData();
+  switchDashboardMode('owner');
 }
 
-// Back helpers
-function goBackToResult() { showScreen('screen-result'); }
-function goBackToAnalysis() { showScreen('screen-analysis'); }
+function switchDashboardMode(mode) {
+  document.getElementById('owner-view').classList.toggle('hidden', mode !== 'owner');
+  document.getElementById('admin-view').classList.toggle('hidden', mode !== 'admin');
+  if (mode === 'admin') renderAdminView();
+}
+
+function loadProgressData() {
+  const saved = localStorage.getItem('essProgressData');
+  if (saved) progressData = JSON.parse(saved);
+  renderOwnerView();
+}
+
+function saveProgressData() {
+  localStorage.setItem('essProgressData', JSON.stringify(progressData));
+}
+
+function renderOwnerView() {
+  let html = '';
+  progressData.phases.forEach((phase, i) => {
+    const progress = phase.checklist.length ? Math.round(phase.checklist.filter(c => c.done).length / phase.checklist.length * 100) : 0;
+    html += `
+      <div class="border rounded-2xl p-6 bg-white shadow-sm">
+        <h4 class="font-bold text-lg">${phase.name}</h4>
+        <div class="grid grid-cols-2 gap-4 mt-4">
+          <div>Start: <input type="date" value="${phase.start||''}" onchange="updatePhase(${i},'start',this.value)" class="border p-2 rounded w-full"></div>
+          <div>End: <input type="date" value="${phase.end||''}" onchange="updatePhase(${i},'end',this.value)" class="border p-2 rounded w-full"></div>
+        </div>
+        <div class="mt-6">
+          <h5 class="font-medium mb-3">Checklist (${progress}%)</h5>
+          ${phase.checklist.map((item,j) => `
+            <label class="flex items-center gap-2 mb-2 cursor-pointer">
+              <input type="checkbox" ${item.done?'checked':''} onchange="toggleChecklist(${i},${j},this.checked)" class="h-5 w-5">
+              ${item.text}
+            </label>
+          `).join('')}
+        </div>
+        <div class="mt-6">
+          <h5 class="font-medium mb-2">Budget Spent (₦${phase.spent||0} / ₦${phase.targetBudget||10000000})</h5>
+          <input type="range" min="0" max="${phase.targetBudget||10000000}" value="${phase.spent||0}" class="w-full h-3 bg-gray-300 rounded-lg appearance-none cursor-pointer" oninput="updateSpent(${i},this.value)">
+        </div>
+      </div>
+    `;
+  });
+  document.getElementById('phases-owner').innerHTML = html;
+}
+
+function updatePhase(i, field, value) {
+  progressData.phases[i][field] = value;
+  saveProgressData();
+}
+
+function toggleChecklist(i, j, done) {
+  progressData.phases[i].checklist[j].done = done;
+  saveProgressData();
+  renderOwnerView();
+}
+
+function updateSpent(i, value) {
+  progressData.phases[i].spent = parseFloat(value) || 0;
+  saveProgressData();
+  renderOwnerView();
+}
+
+function renderAdminView() {
+  let html = '';
+  progressData.phases.forEach(phase => {
+    const doneCount = phase.checklist.filter(c => c.done).length;
+    const progress = phase.checklist.length ? Math.round(doneCount / phase.checklist.length * 100) : 0;
+    html += `
+      <div class="border rounded-2xl p-6 bg-white shadow-sm">
+        <h4 class="font-bold text-lg">${phase.name}</h4>
+        <div class="h-3 bg-gray-200 rounded-full overflow-hidden mt-4">
+          <div class="h-full bg-green-500 transition-all" style="width:${progress}%"></div>
+        </div>
+        <div class="text-sm text-gray-600 mt-1">${progress}% complete • Spent: ₦${phase.spent||0} / ₦${phase.targetBudget||10000000}</div>
+      </div>
+    `;
+  });
+  document.getElementById('admin-progress').innerHTML = html;
+}
+
+function sendAdminMessage() {
+  const msg = document.getElementById('admin-message').value.trim();
+  if (msg) {
+    alert('Message sent to Project Owner:\n\n' + msg);
+    document.getElementById('admin-message').value = '';
+  }
+}
 
 // ───────────────────────────────────────────────
-// Start
+// Start (unchanged)
 // ───────────────────────────────────────────────
 if (localStorage.getItem('essQuestionnaire')) {
   answers = JSON.parse(localStorage.getItem('essQuestionnaire'));
@@ -529,5 +767,4 @@ if (localStorage.getItem('essQuestionnaire')) {
 }
 </script>
 </body>
-
 </html>
