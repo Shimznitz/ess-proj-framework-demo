@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ESS Proposal Gateway</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+  <style>
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .option-card {
+      transition: all 0.2s; cursor: pointer;
+      border: 2px solid #e5e7eb;
+      border-radius: 1rem;
+      padding: 1.5rem;
+    }
+    .option-card:hover { transform: translateY(-2px); }
+    .option-card.selected {
+      border-color: #6366f1;
+      background: #eef2ff;
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
+    }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.25rem;
+      background: #f3f4f6;
+      color: #374151;
+      border-radius: 0.75rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .back-btn:hover {
+      background: #e5e7eb;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen py-10">
+
+<div class="max-w-5xl mx-auto px-5">
+
+  <!-- ───── SCREEN 1 – Questionnaire ───── -->
+  <div id="screen-questionnaire" class="screen active">
+    <div class="text-center mb-10">
+      <h1 class="text-4xl font-bold text-indigo-700">ESS Proposal Gateway</h1>
+      <p class="text-lg text-gray-600 mt-3">Answer 10 questions to classify your project track</p>
+    </div>
+    <div class="bg-white rounded-2xl shadow-lg p-8 md:p-10 max-w-3xl mx-auto">
+      <div class="mb-8">
+        <div class="flex justify-between text-sm text-gray-500 mb-2">
+          <span>Question <strong id="q-num">1</strong>/10</span>
+          <span id="progress-pct">0% complete</span>
+        </div>
+        <div class="h-2 bg-gray-200 rounded-full">
+          <div id="progress" class="h-2 bg-indigo-600 rounded-full w-0 transition-all"></div>
+        </div>
+      </div>
+      <h2 id="question-text" class="text-2xl font-semibold mb-8 min-h-[4rem]"></h2>
+      <div id="options" class="grid gap-5"></div>
+      <div class="flex justify-between mt-12">
+        <button id="btn-prev" onclick="prev()" class="px-8 py-3 text-gray-600 hover:text-gray-900 font-medium hidden">← Previous</button>
+        <button id="btn-next" onclick="next()" class="px-10 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───── SCREEN 2 – Questionnaire Result + Upload + Framework Button ───── -->
+  <div id="screen-result" class="screen">
+    <div class="bg-white rounded-2xl shadow-lg p-8 md:p-12">
+      <button onclick="restartQuestionnaire()" class="back-btn mb-8">
+        ← Start New Questionnaire
+      </button>
+      <div class="text-center mb-10">
+        <div id="result-emoji" class="text-7xl mb-4"></div>
+        <span id="result-badge" class="inline-block px-5 py-1.5 bg-indigo-100 text-indigo-700 font-bold rounded-full"></span>
+        <h2 id="result-title" class="text-3xl font-bold mt-4"></h2>
+        <p id="result-subtitle" class="text-lg text-gray-600 mt-2"></p>
+      </div>
+      <div class="grid md:grid-cols-2 gap-10 mb-12">
+        <div>
+          <h3 class="font-semibold text-center mb-4">Questionnaire Score</h3>
+          <canvas id="barChart" height="160"></canvas>
+        </div>
+        <div>
+          <h3 class="font-semibold text-center mb-4">Track Distribution</h3>
+          <canvas id="pieChart" height="160"></canvas>
+        </div>
+      </div>
+      <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-8 mb-12">
+        <h3 class="text-xl font-bold mb-4 text-indigo-800">Recommended Proposal Framework</h3>
+        <p class="text-gray-700 mb-6">
+          Click below to see the complete proposal structure we recommend and use as reference when analyzing your uploaded proposal.
+        </p>
+        <button onclick="showFramework()"
+                class="w-full sm:w-auto px-10 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl">
+          Show Recommended Proposal Framework →
+        </button>
+      </div>
+      <div class="border border-dashed border-gray-400 rounded-2xl p-10 bg-gray-50">
+        <h3 class="text-xl font-bold mb-4 text-center">Compare your existing proposal</h3>
+        <p class="text-center text-gray-600 mb-6">
+          Upload your current proposal draft to see how well it aligns with the recommended framework.<br>
+          <strong class="text-amber-700">PDF tip:</strong> If your file is PDF, copy the text into Notepad or Word and save as .txt for best results.
+        </p>
+        <div class="flex flex-col items-center gap-5">
+          <input type="file" id="file-upload" accept=".txt,.md,.pdf"
+                 class="block w-full max-w-md text-sm text-gray-500
+                        file:mr-4 file:py-3 file:px-6 file:rounded-xl
+                        file:border-0 file:bg-indigo-50 file:text-indigo-700
+                        hover:file:bg-indigo-100"/>
+          <button onclick="analyzeFile()"
+                  class="px-12 py-4 bg-gray-800 hover:bg-gray-900 text-white font-semibold rounded-xl">
+            Analyze File
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───── SCREEN 3 – Document Analysis Result ───── -->
+  <div id="screen-analysis" class="screen">
+    <div class="bg-white rounded-2xl shadow-lg p-8 md:p-12">
+      <button onclick="goBackToResult()" class="back-btn mb-8">
+        ← Back to questionnaire result
+      </button>
+      <h2 class="text-3xl font-bold mb-8 text-center">Document Match Analysis</h2>
+      <div id="analysis-bars" class="space-y-8 mb-12"></div>
+      <div id="analysis-missing" class="bg-amber-50 border border-amber-200 rounded-2xl p-8 mb-12"></div>
+      <div class="bg-blue-50 border border-blue-200 rounded-2xl p-8 mb-12 text-center">
+        <p class="text-lg font-medium text-blue-800 mb-4">
+          It is recommended that your proposal matches the selected track at <strong>above 70%</strong><br>
+          before proceeding with execution planning based on track analysis.
+        </p>
+      </div>
+      <div class="text-center">
+        <button onclick="showExecution()"
+                class="px-12 py-5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-lg rounded-xl">
+          View Project Implementation and Execution →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───── SCREEN 4 – Execution & Implementation ───── -->
+  <div id="screen-execution" class="screen">
+    <div class="bg-white rounded-2xl shadow-lg p-8 md:p-12">
+      <button onclick="goBackToAnalysis()" class="back-btn mb-8">
+        ← Back to analysis results
+      </button>
+      <h2 class="text-3xl font-bold mb-8 text-center">Project Implementation & Execution Framework</h2>
+      <p id="execution-track" class="text-xl text-center mb-10 font-medium"></p>
+      <div id="execution-content" class="prose max-w-none text-gray-800"></div>
+      <div class="mt-16 text-center">
+        <button onclick="showPrintableFramework()"
+                class="px-12 py-5 bg-green-600 hover:bg-green-700 text-white font-bold text-lg rounded-xl">
+          View Full Printable Framework →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───── SCREEN 5 – Printable Full Framework ───── -->
+  <div id="screen-printable" class="screen bg-white min-h-screen p-8 md:p-16">
+    <div class="max-w-4xl mx-auto">
+      <button onclick="history.back()" class="back-btn mb-10">
+        ← Back
+      </button>
+      <div class="flex justify-between items-center mb-12 border-b pb-6">
+        <h1 id="print-title" class="text-4xl font-bold"></h1>
+        <button onclick="window.print()"
+                class="px-8 py-4 bg-gray-800 hover:bg-black text-white font-semibold rounded-xl">
+          🖨️ Print / Save as PDF
+        </button>
+      </div>
+      <div id="print-content" class="prose prose-lg"></div>
+      <div class="mt-20 text-center text-gray-500 text-sm">
+        Generated by ESS Proposal Gateway • Abuja, Nigeria • 2026
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ───────────────────────────────────────────────
+// Data & Globals – FULL QUESTIONS ARRAY NOW INCLUDED
+// ───────────────────────────────────────────────
+let currentQ = 0;
+let answers = new Array(10).fill(null);
+let analysisResult = null;
+
+const questions = [
+  {id:1, text:"What best describes the core purpose of your project?",
+   options:[{emoji:"🔬", text:"Generate new fundamental knowledge or scientific insights", track:"A"},
+            {emoji:"💰", text:"Develop and commercialize a new product, service or technology", track:"B"},
+            {emoji:"🌍", text:"Address a pressing social, humanitarian or environmental challenge", track:"C"}]},
+  {id:2, text:"How will you primarily demonstrate success?",
+   options:[{emoji:"📚", text:"Peer-reviewed publications, citations, or new theories", track:"A"},
+            {emoji:"📈", text:"Revenue, sales, or investor interest", track:"B"},
+            {emoji:"❤️", text:"Measurable improvements in lives, environment, or policy", track:"C"}]},
+  {id:3, text:"Who is the main beneficiary or user of the project outcomes?",
+   options:[{emoji:"👩‍🔬", text:"The global scientific community", track:"A"},
+            {emoji:"🛒", text:"Paying customers or market segments", track:"B"},
+            {emoji:"👥", text:"Specific vulnerable or underserved communities", track:"C"}]},
+  {id:4, text:"What type of funding are you primarily targeting?",
+   options:[{emoji:"🏛️", text:"Competitive research grants (NSF, NIH, TETFund, national academies)", track:"A"},
+            {emoji:"💼", text:"Venture capital, private equity, or corporate innovation funds", track:"B"},
+            {emoji:"🤝", text:"Philanthropic foundations or development agencies (USAID, Gates, UNDP)", track:"C"}]},
+  {id:5, text:"The project timeline is best characterized as:",
+   options:[{emoji:"📅", text:"Long-term exploratory research (3–7+ years)", track:"A"},
+            {emoji:"🚀", text:"Accelerated path to market (1–3 years)", track:"B"},
+            {emoji:"🌱", text:"Medium to long-term sustainable development (3–10+ years)", track:"C"}]},
+  {id:6, text:"The biggest risk in the project is:",
+   options:[{emoji:"🧪", text:"Technical feasibility or scientific uncertainty", track:"A"},
+            {emoji:"📉", text:"Market acceptance, competition, or financial viability", track:"B"},
+            {emoji:"🌧️", text:"Stakeholder adoption, policy, or external factors", track:"C"}]},
+  {id:7, text:"Your preferred Intellectual Property approach is:",
+   options:[{emoji:"📖", text:"Open publication to advance knowledge (possible patents for credit)", track:"A"},
+            {emoji:"🔒", text:"Strong IP protection for licensing and commercialization", track:"B"},
+            {emoji:"🔓", text:"Open-source or community-managed for public good", track:"C"}]},
+  {id:8, text:"The project mainly requires:",
+   options:[{emoji:"🔬", text:"Specialized laboratory, computing, or analytical equipment", track:"A"},
+            {emoji:"🏭", text:"Prototyping, manufacturing, or marketing resources", track:"B"},
+            {emoji:"🤝", text:"Field sites, community training, and monitoring tools", track:"C"}]},
+  {id:9, text:"The broader impact you want to achieve is:",
+   options:[{emoji:"🌟", text:"Paradigm-shifting discoveries in the academic field", track:"A"},
+            {emoji:"🏗️", text:"Economic growth, jobs, or successful startup/exit", track:"B"},
+            {emoji:"⚖️", text:"Social equity, environmental restoration, or policy influence", track:"C"}]},
+  {id:10,text:"This project is most inspired by:",
+   options:[{emoji:"📖", text:"Unresolved questions in scientific literature", track:"A"},
+            {emoji:"💡", text:"Identified market gaps or customer pain points", track:"B"},
+            {emoji:"🌍", text:"On-the-ground challenges faced by communities or ecosystems", track:"C"}]}
+];
+
+const trackInfo = {
+  A: {letter:"A", name:"Discovery", emoji:"🔬", focus:"Pure Research & Development", color:"#4f46e5"},
+  B: {letter:"B", name:"Venture", emoji:"💰", focus:"Profit-Making & Commercialization", color:"#10b981"},
+  C: {letter:"C", name:"Impact", emoji:"🌍", focus:"Social, Humanitarian & Environmental", color:"#f59e0b"}
+};
+
+const signatures = {
+  common: [/executive summary/i, /problem statement/i, /budget/i, /risk/i, /mitigation/i, /timeline/i, /milestone/i],
+  A: [/literature review/i, /state of the art/i, /intellectual merit/i, /citations/i, /peer reviewed/i, /preliminary data/i, /hypothesis/i, /methodology/i],
+  B: [/market analysis/i, /tam/i, /total addressable market/i, /competitive landscape/i, /go to market/i, /revenue/i, /roi/i, /business model/i, /traction/i],
+  C: [/theory of change/i, /beneficiar/i, /sustainability/i, /logframe/i, /indicator/i, /outcome/i, /impact/i, /scale/i]
+};
+
+// ───────────────────────────────────────────────
+// Navigation
+// ───────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ───────────────────────────────────────────────
+// Questionnaire Functions
+// ───────────────────────────────────────────────
+function renderQuestion() {
+  const q = questions[currentQ];
+  document.getElementById('q-num').textContent = currentQ + 1;
+  document.getElementById('progress').style.width = `${((currentQ + 1)/10)*100}%`;
+  document.getElementById('progress-pct').textContent = `${Math.round(((currentQ + 1)/10)*100)}% complete`;
+  document.getElementById('question-text').textContent = q.text;
+
+  const opts = document.getElementById('options');
+  opts.innerHTML = '';
+  q.options.forEach(o => {
+    const div = document.createElement('div');
+    div.className = `option-card ${answers[currentQ] === o.track ? 'selected' : ''}`;
+    div.innerHTML = `<div class="text-5xl mb-3">${o.emoji}</div><div class="text-lg font-medium">${o.text}</div>`;
+    div.onclick = () => {
+      answers[currentQ] = o.track;
+      renderQuestion();
+    };
+    opts.appendChild(div);
+  });
+
+  document.getElementById('btn-prev').classList.toggle('hidden', currentQ === 0);
+  document.getElementById('btn-next').textContent = currentQ === 9 ? 'Finish & See Result' : 'Next →';
+}
+
+function next() {
+  if (!answers[currentQ]) return alert('Please select an option');
+  if (currentQ < 9) {
+    currentQ++;
+    renderQuestion();
+  } else {
+    finishQuestionnaire();
+  }
+}
+
+function prev() {
+  if (currentQ > 0) {
+    currentQ--;
+    renderQuestion();
+  }
+}
+
+function finishQuestionnaire() {
+  localStorage.setItem('essQuestionnaire', JSON.stringify(answers));
+  showScreen('screen-result');
+  renderQuestionnaireResult();
+}
+
+function renderQuestionnaireResult() {
+  const scores = {A:0, B:0, C:0};
+  answers.forEach(t => { if (t) scores[t]++; });
+  const max = Math.max(scores.A, scores.B, scores.C);
+  const primary = scores.A === max ? 'A' : scores.B === max ? 'B' : 'C';
+  const info = trackInfo[primary];
+
+  document.getElementById('result-emoji').textContent = info.emoji;
+  document.getElementById('result-badge').textContent = `Track ${info.letter} – ${info.name}`;
+  document.getElementById('result-title').textContent = `Your project aligns most with ${info.name}`;
+  document.getElementById('result-subtitle').textContent = info.focus;
+
+  const labels = ['Discovery (A)', 'Venture (B)', 'Impact (C)'];
+  const data = [scores.A, scores.B, scores.C];
+
+  new Chart(document.getElementById('barChart'), {
+    type: 'bar',
+    data: {labels, datasets:[{data, backgroundColor:['#4f46e5','#10b981','#f59e0b']}]},
+    options: {indexAxis:'y', plugins:{legend:{display:false}}, scales:{x:{max:10}}}
+  });
+
+  new Chart(document.getElementById('pieChart'), {
+    type: 'doughnut',
+    data: {labels, datasets:[{data:data.map(v=>v*10), backgroundColor:['#4f46e5','#10b981','#f59e0b']}]},
+    options: {cutout:'65%', plugins:{legend:{position:'bottom'}}}
+  });
+}
+
+function restartQuestionnaire() {
+  currentQ = 0;
+  answers.fill(null);
+  localStorage.removeItem('essQuestionnaire');
+  showScreen('screen-questionnaire');
+  renderQuestion();
+}
+
+// ───────────────────────────────────────────────
+// Framework (from Screen 2 button)
+// ───────────────────────────────────────────────
+function showFramework() {
+  const saved = localStorage.getItem('essQuestionnaire');
+  if (!saved) return alert('No questionnaire data found.');
+
+  const ans = JSON.parse(saved);
+  const scores = {A:0, B:0, C:0};
+  ans.forEach(t => {if(t) scores[t]++;});
+  const max = Math.max(scores.A, scores.B, scores.C);
+  const track = scores.A === max ? 'A' : scores.B === max ? 'B' : 'C';
+
+  const title = `Recommended Proposal Framework – Track ${trackInfo[track].letter} (${trackInfo[track].name})`;
+
+  let content = `
+    <h1 class="text-4xl font-bold mb-10">${title}</h1>
+    <p class="text-xl text-gray-700 mb-12">This is the standard structure we use when analyzing uploaded proposals.</p>
+
+    <div class="space-y-12">
+      <div>
+        <h2 class="text-2xl font-bold mb-6">Core Sections</h2>
+        <div class="grid md:grid-cols-2 gap-6">
+  `;
+
+  const sections = track === 'A' ? [
+    'Executive Summary & Abstract', 'State-of-the-Art Literature Review', 'Research Questions / Hypotheses',
+    'Intellectual Merit & Innovation', 'Preliminary Results / Proof of Concept', 'Detailed Methodology',
+    'Data Management & Sharing Plan', 'Publication & Dissemination Strategy', 'Timeline & Milestones'
+  ] : track === 'B' ? [
+    'One-Page Executive Pitch', 'Market Opportunity (TAM / SAM / SOM)', 'Product / Solution Description',
+    'Competitive Landscape & Positioning', 'Go-to-Market & Sales Strategy', 'Business Model & Revenue Streams',
+    'Financial Projections (3–5 years)', 'Team & Governance', 'IP, Regulatory & Use of Funds'
+  ] : [
+    'Executive Summary & Impact Goal', 'Problem & Needs Assessment (baseline)', 'Theory of Change / Logframe',
+    'Beneficiary & Stakeholder Analysis', 'Intervention Activities & Inputs', 'Monitoring & Evaluation Plan',
+    'Sustainability & Exit Strategy', 'Risks, Assumptions & Mitigation'
+  ];
+
+  sections.forEach(s => {
+    content += `<div class="bg-gray-50 p-6 rounded-xl border"><strong>${s}</strong><p class="text-sm text-gray-600 mt-2">(detailed guidance here)</p></div>`;
+  });
+
+  content += `</div></div></div>`;
+
+  document.getElementById('print-title').textContent = title;
+  document.getElementById('print-content').innerHTML = content;
+  showScreen('screen-printable');
+}
+
+// ───────────────────────────────────────────────
+// File Analysis
+// ───────────────────────────────────────────────
+async function analyzeFile() {
+  const file = document.getElementById('file-upload').files[0];
+  if (!file) return alert('Please select a file.');
+
+  let text = '';
+  const ext = file.name.split('.').pop().toLowerCase();
+
+  try {
+    if (ext === 'txt' || ext === 'md') {
+      text = await file.text();
+    } else if (ext === 'pdf') {
+      text = await extractPDFText(file);
+    } else {
+      return alert('Only .txt, .md, .pdf files supported.');
+    }
+
+    const norm = text.toLowerCase().replace(/\s+/g, ' ').trim();
+
+    const counts = {A:0, B:0, C:0, common:0};
+    Object.keys(signatures).forEach(k => {
+      signatures[k].forEach(r => { if (r.test(norm)) counts[k]++; });
+    });
+
+    const totals = {
+      A: signatures.A.length + signatures.common.length,
+      B: signatures.B.length + signatures.common.length,
+      C: signatures.C.length + signatures.common.length
+    };
+
+    const scores = {
+      A: Math.round((counts.A + counts.common) / totals.A * 100) || 0,
+      B: Math.round((counts.B + counts.common) / totals.B * 100) || 0,
+      C: Math.round((counts.C + counts.common) / totals.C * 100) || 0
+    };
+
+    analysisResult = {scores, primaryTrack: getHighestTrack(scores)};
+
+    renderAnalysis(scores);
+    showScreen('screen-analysis');
+
+  } catch (err) {
+    alert('File processing failed.\n' + err.message);
+  }
+}
+
+function getHighestTrack(scores) {
+  let max = -1, tr = 'A';
+  for (let k in scores) if (scores[k] > max) { max = scores[k]; tr = k; }
+  return tr;
+}
+
+function renderAnalysis(scores) {
+  const cont = document.getElementById('analysis-bars');
+  cont.innerHTML = '';
+  ['A','B','C'].forEach(k => {
+    const p = scores[k];
+    cont.innerHTML += `
+      <div class="bg-gray-50 p-5 rounded-xl">
+        <div class="flex justify-between mb-2 font-semibold">
+          <span>Track ${k} – ${trackInfo[k].name}</span>
+          <span>${p}%</span>
+        </div>
+        <div class="h-4 bg-gray-200 rounded-full overflow-hidden">
+          <div class="h-full transition-all duration-700" style="width:${p}%; background:${trackInfo[k].color}"></div>
+        </div>
+      </div>`;
+  });
+
+  document.getElementById('analysis-missing').innerHTML = `
+    <h4 class="font-bold text-amber-800 mb-4">Detected / missing elements (example):</h4>
+    <p>Common sections: executive summary, problem statement, budget...</p>
+  `;
+}
+
+async function extractPDFText(file) {
+  const ab = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({data: ab}).promise;
+  let txt = [];
+  for (let i = 1; i <= Math.min(20, pdf.numPages); i++) {
+    const page = await pdf.getPage(i);
+    const c = await page.getTextContent();
+    txt.push(c.items.map(it => it.str).join(' '));
+  }
+  return txt.join(' ');
+}
+
+// ───────────────────────────────────────────────
+// Execution screen
+// ───────────────────────────────────────────────
+function showExecution() {
+  if (!analysisResult) return alert('No analysis result available.');
+  const tr = analysisResult.primaryTrack;
+  const info = trackInfo[tr];
+  document.getElementById('execution-track').textContent =
+    `Execution Plan – Track ${info.letter} (${info.name}) – ${analysisResult.scores[tr]}% document match`;
+
+  document.getElementById('execution-content').innerHTML = `
+    <div class="space-y-10">
+      <div>
+        <h3 class="text-2xl font-bold mb-6">Implementation Phases</h3>
+        <ul class="list-decimal pl-6 space-y-4">
+          <li><strong>Phase 1 (Months 1–6):</strong> Preparation, baseline, team setup</li>
+          <li><strong>Phase 2 (Months 7–24):</strong> Core delivery, monitoring</li>
+          <li><strong>Phase 3 (Months 25–36):</strong> Scale, evaluation, handover</li>
+        </ul>
+      </div>
+    </div>
+  `;
+  showScreen('screen-execution');
+}
+
+// ───────────────────────────────────────────────
+// Printable framework
+// ───────────────────────────────────────────────
+function showPrintableFramework() {
+  showFramework(); // reuse for now
+}
+
+// Back helpers
+function goBackToResult() { showScreen('screen-result'); }
+function goBackToAnalysis() { showScreen('screen-analysis'); }
+
+// ───────────────────────────────────────────────
+// Start
+// ───────────────────────────────────────────────
+if (localStorage.getItem('essQuestionnaire')) {
+  answers = JSON.parse(localStorage.getItem('essQuestionnaire'));
+  showScreen('screen-result');
+  renderQuestionnaireResult();
+} else {
+  renderQuestion();
+}
+</script>
+</body>
+</html>
