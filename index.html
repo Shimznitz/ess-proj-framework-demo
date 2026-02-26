@@ -11,33 +11,12 @@
     body { font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; }
     .screen { display: none; }
     .screen.active { display: block; }
-    .option-card {
-      transition: all 0.2s; cursor: pointer;
-      border: 2px solid #e5e7eb;
-      border-radius: 1rem;
-      padding: 1.5rem;
-    }
+    .option-card { transition: all 0.2s; cursor: pointer; border: 2px solid #e5e7eb; border-radius: 1rem; padding: 1.5rem; }
     .option-card:hover { transform: translateY(-2px); }
-    .option-card.selected {
-      border-color: #6366f1;
-      background: #eef2ff;
-      box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
-    }
-    .back-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.75rem 1.25rem;
-      background: #f3f4f6;
-      color: #374151;
-      border-radius: 0.75rem;
-      font-weight: 500;
-      transition: all 0.2s;
-    }
-    .back-btn:hover {
-      background: #e5e7eb;
-    }
-    input[type="checkbox"] { cursor: pointer; }
+    .option-card.selected { border-color: #6366f1; background: #eef2ff; box-shadow: 0 0 0 3px rgba(99,102,241,0.2); }
+    .back-btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.25rem; background: #f3f4f6; color: #374151; border-radius: 0.75rem; font-weight: 500; transition: all 0.2s; cursor: pointer; }
+    .back-btn:hover { background: #e5e7eb; }
+    input[type="checkbox"] { cursor: pointer; transform: scale(1.3); margin-right: 0.5rem; }
     input[type="range"] { cursor: pointer; width: 100%; }
   </style>
 </head>
@@ -45,7 +24,7 @@
 
 <div class="max-w-5xl mx-auto px-5">
 
-  <!-- ───── SCREEN 1 – Questionnaire ───── -->
+  <!-- SCREEN 1 – Questionnaire -->
   <div id="screen-questionnaire" class="screen active">
     <div class="text-center mb-10">
       <h1 class="text-4xl font-bold text-indigo-700">ESS Proposal Gateway</h1>
@@ -70,12 +49,10 @@
     </div>
   </div>
 
-  <!-- ───── SCREEN 2 – Questionnaire Result + Upload + Framework Button ───── -->
+  <!-- SCREEN 2 – Questionnaire Result -->
   <div id="screen-result" class="screen">
     <div class="bg-white rounded-2xl shadow-lg p-8 md:p-12">
-      <button onclick="restartQuestionnaire()" class="back-btn mb-8">
-        ← Start New Questionnaire
-      </button>
+      <button onclick="restartQuestionnaire()" class="back-btn mb-8">← Start New Questionnaire</button>
       <div class="text-center mb-10">
         <div id="result-emoji" class="text-7xl mb-4"></div>
         <span id="result-badge" class="inline-block px-5 py-1.5 bg-indigo-100 text-indigo-700 font-bold rounded-full"></span>
@@ -83,22 +60,15 @@
         <p id="result-subtitle" class="text-lg text-gray-600 mt-2"></p>
       </div>
       <div class="grid md:grid-cols-2 gap-10 mb-12">
-        <div>
-          <h3 class="font-semibold text-center mb-4">Questionnaire Score</h3>
-          <canvas id="barChart" height="160"></canvas>
-        </div>
-        <div>
-          <h3 class="font-semibold text-center mb-4">Track Distribution</h3>
-          <canvas id="pieChart" height="160"></canvas>
-        </div>
+        <div><h3 class="font-semibold text-center mb-4">Questionnaire Score</h3><canvas id="barChart" height="160"></canvas></div>
+        <div><h3 class="font-semibold text-center mb-4">Track Distribution</h3><canvas id="pieChart" height="160"></canvas></div>
       </div>
       <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-8 mb-12">
         <h3 class="text-xl font-bold mb-4 text-indigo-800">Recommended Proposal Framework</h3>
         <p class="text-gray-700 mb-6">
           Click below to see the complete proposal structure we recommend and use as reference when analyzing your uploaded proposal.
         </p>
-        <button onclick="showFramework()"
-                class="w-full sm:w-auto px-10 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl">
+        <button onclick="showFramework()" class="w-full sm:w-auto px-10 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl">
           Show Recommended Proposal Framework →
         </button>
       </div>
@@ -109,13 +79,8 @@
           <strong class="text-amber-700">PDF tip:</strong> If your file is PDF, copy the text into Notepad or Word and save as .txt for best results.
         </p>
         <div class="flex flex-col items-center gap-5">
-          <input type="file" id="file-upload" accept=".txt,.md,.pdf"
-                 class="block w-full max-w-md text-sm text-gray-500
-                        file:mr-4 file:py-3 file:px-6 file:rounded-xl
-                        file:border-0 file:bg-indigo-50 file:text-indigo-700
-                        hover:file:bg-indigo-100"/>
-          <button onclick="analyzeFile()"
-                  class="px-12 py-4 bg-gray-800 hover:bg-gray-900 text-white font-semibold rounded-xl">
+          <input type="file" id="file-upload" accept=".txt,.md,.pdf" class="block w-full max-w-md text-sm text-gray-500 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"/>
+          <button onclick="analyzeFile()" class="px-12 py-4 bg-gray-800 hover:bg-gray-900 text-white font-semibold rounded-xl">
             Analyze File
           </button>
         </div>
@@ -123,12 +88,10 @@
     </div>
   </div>
 
-  <!-- ───── SCREEN 3 – Document Analysis Result ───── -->
+  <!-- SCREEN 3 – Document Analysis Result -->
   <div id="screen-analysis" class="screen">
     <div class="bg-white rounded-2xl shadow-lg p-8 md:p-12">
-      <button onclick="goBackToResult()" class="back-btn mb-8">
-        ← Back to questionnaire result
-      </button>
+      <button onclick="goBackToResult()" class="back-btn mb-8">← Back to questionnaire result</button>
       <h2 class="text-3xl font-bold mb-8 text-center">Document Match Analysis</h2>
       <div id="analysis-bars" class="space-y-8 mb-12"></div>
       <div id="analysis-missing" class="bg-amber-50 border border-amber-200 rounded-2xl p-8 mb-12"></div>
@@ -139,46 +102,38 @@
         </p>
       </div>
       <div class="text-center">
-        <button onclick="showExecution()"
-                class="px-12 py-5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-lg rounded-xl">
+        <button onclick="showExecution()" class="px-12 py-5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-lg rounded-xl">
           View Project Implementation and Execution →
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ───── SCREEN 4 – Execution & Implementation (now comprehensive) ───── -->
+  <!-- SCREEN 4 – Execution & Implementation (now comprehensive) -->
   <div id="screen-execution" class="screen">
     <div class="bg-white rounded-2xl shadow-lg p-8 md:p-12">
-      <button onclick="goBackToAnalysis()" class="back-btn mb-8">
-        ← Back to analysis results
-      </button>
+      <button onclick="goBackToAnalysis()" class="back-btn mb-8">← Back to analysis results</button>
       <h2 class="text-3xl font-bold mb-8 text-center">Project Implementation & Execution Framework</h2>
       <p id="execution-track" class="text-xl text-center mb-10 font-medium"></p>
       <div id="execution-content" class="prose max-w-none text-gray-800"></div>
       <div class="mt-16 text-center space-y-6">
-        <button onclick="showProgressDashboard()"
-                class="px-12 py-5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-lg rounded-xl">
+        <button onclick="showProgressDashboard()" class="px-12 py-5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-lg rounded-xl">
           Go to Project Progress Dashboard
         </button>
-        <button onclick="showPrintableFramework()"
-                class="px-12 py-5 bg-green-600 hover:bg-green-700 text-white font-bold text-lg rounded-xl">
+        <button onclick="showPrintableFramework()" class="px-12 py-5 bg-green-600 hover:bg-green-700 text-white font-bold text-lg rounded-xl">
           View Full Printable Implementation Framework →
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ───── SCREEN 5 – Printable Full Framework ───── -->
+  <!-- SCREEN 5 – Printable Full Framework -->
   <div id="screen-printable" class="screen bg-white min-h-screen p-8 md:p-16">
     <div class="max-w-4xl mx-auto">
-      <button onclick="history.back()" class="back-btn mb-10">
-        ← Back
-      </button>
+      <button onclick="history.back()" class="back-btn mb-10">← Back</button>
       <div class="flex justify-between items-center mb-12 border-b pb-6">
         <h1 id="print-title" class="text-4xl font-bold"></h1>
-        <button onclick="window.print()"
-                class="px-8 py-4 bg-gray-800 hover:bg-black text-white font-semibold rounded-xl">
+        <button onclick="window.print()" class="px-8 py-4 bg-gray-800 hover:bg-black text-white font-semibold rounded-xl">
           🖨️ Print / Save as PDF
         </button>
       </div>
@@ -189,42 +144,38 @@
     </div>
   </div>
 
-  <!-- ───── SCREEN 6 – Project Progress Dashboard (new) ───── -->
+  <!-- SCREEN 6 – Project Progress Dashboard -->
   <div id="screen-progress" class="screen">
     <div class="bg-white rounded-2xl shadow-lg p-8 md:p-12">
-      <button onclick="goBackToExecution()" class="back-btn mb-8">
-        ← Back to Execution
-      </button>
+      <button onclick="goBackToExecution()" class="back-btn mb-8">← Back to Execution</button>
       <h2 class="text-3xl font-bold mb-8 text-center">Project Progress Dashboard</h2>
 
       <div class="flex gap-4 mb-8 border-b pb-4">
-        <button onclick="switchDashboardMode('owner')" id="owner-tab" class="flex-1 py-3 font-semibold rounded-xl bg-indigo-600 text-white">
-          Project Owner View (Update Progress)
+        <button onclick="switchDashboardMode('owner')" class="flex-1 py-3 font-semibold rounded-xl bg-indigo-600 text-white pointer-events-auto">
+          Project Owner View – Update Progress
         </button>
-        <button onclick="switchDashboardMode('admin')" id="admin-tab" class="flex-1 py-3 font-semibold rounded-xl bg-gray-200">
-          Admin / Supervisor View (Track Progress)
+        <button onclick="switchDashboardMode('admin')" class="flex-1 py-3 font-semibold rounded-xl bg-gray-200 pointer-events-auto">
+          Admin / Supervisor View – Track Progress
         </button>
       </div>
 
-      <!-- Owner View -->
       <div id="owner-view">
         <div class="mb-8">
           <h3 class="font-bold text-xl mb-4">Set Project Timeline</h3>
           <div class="grid grid-cols-2 gap-4">
-            <div>Overall Start: <input type="date" id="overall-start" class="border p-2 rounded w-full" onchange="saveProgressData()"></div>
-            <div>Overall End: <input type="date" id="overall-end" class="border p-2 rounded w-full" onchange="saveProgressData()"></div>
+            <div>Overall Start: <input type="date" id="overall-start" class="border p-2 rounded w-full pointer-events-auto" onchange="saveProgressData()"></div>
+            <div>Overall End: <input type="date" id="overall-end" class="border p-2 rounded w-full pointer-events-auto" onchange="saveProgressData()"></div>
           </div>
         </div>
         <div id="phases-owner" class="space-y-8"></div>
       </div>
 
-      <!-- Admin View -->
       <div id="admin-view" class="hidden">
         <div id="admin-progress" class="space-y-8"></div>
         <div class="mt-8">
-          <h3 class="font-bold text-xl mb-4">Request Update from Project Owner</h3>
-          <textarea id="admin-message" class="w-full border p-4 rounded-xl h-32" placeholder="Type message or request for update..."></textarea>
-          <button onclick="sendAdminMessage()" class="mt-4 px-8 py-3 bg-indigo-600 text-white font-semibold rounded-xl">
+          <h3 class="font-bold text-xl mb-4">Send Update Request / Message to Project Owner</h3>
+          <textarea id="admin-message" class="w-full border p-4 rounded-xl h-32 pointer-events-auto" placeholder="Type message, request update, or ask for clarification..."></textarea>
+          <button onclick="sendAdminMessage()" class="mt-4 px-8 py-3 bg-indigo-600 text-white font-semibold rounded-xl pointer-events-auto">
             Send Message / Request Update
           </button>
         </div>
@@ -355,49 +306,7 @@ function restartQuestionnaire() {
 }
 
 // ───────────────────────────────────────────────
-// Framework (unchanged from your working version)
-// ───────────────────────────────────────────────
-function showFramework() {
-  const saved = localStorage.getItem('essQuestionnaire');
-  if (!saved) return alert('No questionnaire data found.');
-  const ans = JSON.parse(saved);
-  const scores = {A:0,B:0,C:0};
-  ans.forEach(t => {if(t) scores[t]++;});
-  const max = Math.max(scores.A, scores.B, scores.C);
-  const track = scores.A === max ? 'A' : scores.B === max ? 'B' : 'C';
-  const title = `Recommended Proposal Framework – Track ${trackInfo[track].letter} (${trackInfo[track].name})`;
-  let content = `
-    <h1 class="text-4xl font-bold mb-10">${title}</h1>
-    <p class="text-xl text-gray-700 mb-12">This is the standard structure we use when analyzing uploaded proposals.</p>
-    <div class="space-y-12">
-      <div>
-        <h2 class="text-2xl font-bold mb-6">Core Sections</h2>
-        <div class="grid md:grid-cols-2 gap-6">
-  `;
-  const sections = track === 'A' ? [
-    'Executive Summary & Abstract', 'State-of-the-Art Literature Review', 'Research Questions / Hypotheses',
-    'Intellectual Merit & Innovation', 'Preliminary Results / Proof of Concept', 'Detailed Methodology',
-    'Data Management & Sharing Plan', 'Publication & Dissemination Strategy', 'Timeline & Milestones'
-  ] : track === 'B' ? [
-    'One-Page Executive Pitch', 'Market Opportunity (TAM / SAM / SOM)', 'Product / Solution Description',
-    'Competitive Landscape & Positioning', 'Go-to-Market & Sales Strategy', 'Business Model & Revenue Streams',
-    'Financial Projections (3–5 years)', 'Team & Governance', 'IP, Regulatory & Use of Funds'
-  ] : [
-    'Executive Summary & Impact Goal', 'Problem & Needs Assessment (baseline)', 'Theory of Change / Logframe',
-    'Beneficiary & Stakeholder Analysis', 'Intervention Activities & Inputs', 'Monitoring & Evaluation Plan',
-    'Sustainability & Exit Strategy', 'Risks, Assumptions & Mitigation'
-  ];
-  sections.forEach(s => {
-    content += `<div class="bg-gray-50 p-6 rounded-xl border"><strong>${s}</strong><p class="text-sm text-gray-600 mt-2">(detailed guidance here)</p></div>`;
-  });
-  content += `</div></div></div>`;
-  document.getElementById('print-title').textContent = title;
-  document.getElementById('print-content').innerHTML = content;
-  showScreen('screen-printable');
-}
-
-// ───────────────────────────────────────────────
-// File Analysis (unchanged)
+// File Analysis (unchanged from your working version)
 // ───────────────────────────────────────────────
 async function analyzeFile() {
   const file = document.getElementById('file-upload').files[0];
@@ -473,17 +382,52 @@ async function extractPDFText(file) {
 }
 
 // ───────────────────────────────────────────────
-// Back helpers (unchanged)
+// Proposal Framework (unchanged)
 // ───────────────────────────────────────────────
-function goBackToResult() { showScreen('screen-result'); }
-function goBackToAnalysis() { showScreen('screen-analysis'); }
-function goBackToExecution() { showScreen('screen-execution'); }
+function showFramework() {
+  const saved = localStorage.getItem('essQuestionnaire');
+  if (!saved) return alert('No questionnaire data found.');
+  const ans = JSON.parse(saved);
+  const scores = {A:0,B:0,C:0};
+  ans.forEach(t => {if(t) scores[t]++;});
+  const max = Math.max(scores.A, scores.B, scores.C);
+  const track = scores.A === max ? 'A' : scores.B === max ? 'B' : 'C';
+  const title = `Recommended Proposal Framework – Track ${trackInfo[track].letter} (${trackInfo[track].name})`;
+  let content = `
+    <h1 class="text-4xl font-bold mb-10">${title}</h1>
+    <p class="text-xl text-gray-700 mb-12">This is the standard structure we use when analyzing uploaded proposals.</p>
+    <div class="space-y-12">
+      <div>
+        <h2 class="text-2xl font-bold mb-6">Core Sections</h2>
+        <div class="grid md:grid-cols-2 gap-6">
+  `;
+  const sections = track === 'A' ? [
+    'Executive Summary & Abstract', 'State-of-the-Art Literature Review', 'Research Questions / Hypotheses',
+    'Intellectual Merit & Innovation', 'Preliminary Results / Proof of Concept', 'Detailed Methodology',
+    'Data Management & Sharing Plan', 'Publication & Dissemination Strategy', 'Timeline & Milestones'
+  ] : track === 'B' ? [
+    'One-Page Executive Pitch', 'Market Opportunity (TAM / SAM / SOM)', 'Product / Solution Description',
+    'Competitive Landscape & Positioning', 'Go-to-Market & Sales Strategy', 'Business Model & Revenue Streams',
+    'Financial Projections (3–5 years)', 'Team & Governance', 'IP, Regulatory & Use of Funds'
+  ] : [
+    'Executive Summary & Impact Goal', 'Problem & Needs Assessment (baseline)', 'Theory of Change / Logframe',
+    'Beneficiary & Stakeholder Analysis', 'Intervention Activities & Inputs', 'Monitoring & Evaluation Plan',
+    'Sustainability & Exit Strategy', 'Risks, Assumptions & Mitigation'
+  ];
+  sections.forEach(s => {
+    content += `<div class="bg-gray-50 p-6 rounded-xl border"><strong>${s}</strong><p class="text-sm text-gray-600 mt-2">(detailed guidance here)</p></div>`;
+  });
+  content += `</div></div></div>`;
+  document.getElementById('print-title').textContent = title;
+  document.getElementById('print-content').innerHTML = content;
+  showScreen('screen-printable');
+}
 
 // ───────────────────────────────────────────────
-// Execution Page – now comprehensive (as requested)
+// Execution Page – now fully fleshed out (as requested)
 // ───────────────────────────────────────────────
 function showExecution() {
-  if (!analysisResult) return alert('No analysis result available.');
+  if (!analysisResult) return alert('No analysis result.');
   const tr = analysisResult.primaryTrack;
   const info = trackInfo[tr];
   document.getElementById('execution-track').innerHTML = `Execution & Implementation Framework – Track ${info.letter} (${info.name}) – <strong>${analysisResult.scores[tr]}%</strong> document match`;
@@ -491,160 +435,257 @@ function showExecution() {
   let phasesHTML = '';
   if (tr === 'A') {
     phasesHTML = `
-      <div class="space-y-10">
-        <div class="border-l-4 border-indigo-500 pl-6">
-          <h4 class="font-bold text-xl">Phase 1: Foundation (Months 1–12)</h4>
-          <p class="text-gray-700 mt-2">Strategy: Build scientific foundation, secure approvals, collect preliminary data, refine methodology for reproducibility.</p>
-          <ul class="list-disc pl-6 mt-4 space-y-2">
-            <li><input type="checkbox" class="h-5 w-5"> Ethics/IRB approval obtained</li>
-            <li><input type="checkbox" class="h-5 w-5"> Literature review completed and gap identified</li>
-            <li><input type="checkbox" class="h-5 w-5"> Pilot experiments conducted and data collected</li>
-            <li><input type="checkbox" class="h-5 w-5"> Methods validated with preliminary results</li>
-          </ul>
+      <div class="space-y-12">
+        <div>
+          <h3 class="text-2xl font-bold mb-4">Overall Strategy</h3>
+          <p class="text-gray-700 mb-4">Long-term exploratory research emphasizing scientific novelty, rigorous methodology, reproducibility, and contribution to global knowledge. Timeline: 36 months. Key principles: open science, data integrity, peer validation.</p>
         </div>
-        <div class="border-l-4 border-indigo-500 pl-6">
-          <h4 class="font-bold text-xl">Phase 2: Core Research (Months 13–24)</h4>
-          <p class="text-gray-700 mt-2">Strategy: Execute main research plan, collect primary dataset, perform rigorous analysis.</p>
-          <ul class="list-disc pl-6 mt-4 space-y-2">
-            <li><input type="checkbox" class="h-5 w-5"> Main dataset fully collected</li>
-            <li><input type="checkbox" class="h-5 w-5"> Statistical / computational analysis completed</li>
-            <li><input type="checkbox" class="h-5 w-5"> Preliminary results presented to peers</li>
-            <li><input type="checkbox" class="h-5 w-5"> First manuscript drafted</li>
-          </ul>
+        <div>
+          <h3 class="text-2xl font-bold mb-4">Visual Timeline (Gantt-style)</h3>
+          <canvas id="ganttChart" height="140"></canvas>
         </div>
-        <div class="border-l-4 border-indigo-500 pl-6">
-          <h4 class="font-bold text-xl">Phase 3: Synthesis & Dissemination (Months 25–36)</h4>
-          <p class="text-gray-700 mt-2">Strategy: Finalize findings, publish in high-impact journals, share data openly, present at conferences.</p>
-          <ul class="list-disc pl-6 mt-4 space-y-2">
-            <li><input type="checkbox" class="h-5 w-5"> 3+ peer-reviewed publications submitted/accepted</li>
-            <li><input type="checkbox" class="h-5 w-5"> Conference presentations delivered</li>
-            <li><input type="checkbox" class="h-5 w-5"> Data repository populated and shared</li>
-            <li><input type="checkbox" class="h-5 w-5"> Final project report and knowledge transfer completed</li>
-          </ul>
+        <div class="space-y-10">
+          <div class="border-l-4 border-indigo-500 pl-6">
+            <h4 class="font-bold text-xl mb-2">Phase 1: Foundation (Months 1–12)</h4>
+            <p class="text-gray-700 mb-4">Strategy: Establish rigorous scientific base, obtain all necessary approvals, collect pilot data, validate methods, and prepare for core research.</p>
+            <h5 class="font-medium mb-3 text-lg">Execution Checklist</h5>
+            <div class="space-y-3">
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> Ethics/IRB/Regulatory approval secured</label>
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> Comprehensive literature review and gap analysis completed</label>
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> Pilot study designed, executed, and preliminary data collected</label>
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> Research protocol and methods validated</label>
+            </div>
+            <h5 class="font-medium mt-6 mb-3 text-lg">Budget Tracking</h5>
+            <div class="mb-4">
+              <label class="block text-sm mb-2">Spent: ₦<span id="budgetA1">0</span> / ₦3,500,000</label>
+              <input type="range" min="0" max="3500000" value="0" class="w-full h-3 bg-gray-300 rounded-lg cursor-pointer" oninput="document.getElementById('budgetA1').textContent = this.value">
+            </div>
+            <h5 class="font-medium mt-6 mb-3 text-lg">Key Performance Metrics</h5>
+            <input type="number" class="border p-3 w-full rounded mb-2" placeholder="Pilot data points collected">
+            <input type="number" class="border p-3 w-full rounded" placeholder="Preliminary publications / preprints drafted">
+          </div>
+          <!-- Phase 2 -->
+          <div class="border-l-4 border-indigo-500 pl-6">
+            <h4 class="font-bold text-xl mb-2">Phase 2: Core Research (Months 13–24)</h4>
+            <p class="text-gray-700 mb-4">Strategy: Execute main experiments, collect primary dataset, perform advanced analysis, draft initial manuscripts.</p>
+            <h5 class="font-medium mb-3 text-lg">Execution Checklist</h5>
+            <div class="space-y-3">
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> Primary dataset fully collected</label>
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> Statistical / computational analysis completed</label>
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> Preliminary results presented to collaborators / seminars</label>
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> First manuscript drafted and internally reviewed</label>
+            </div>
+            <h5 class="font-medium mt-6 mb-3 text-lg">Budget Tracking</h5>
+            <div class="mb-4">
+              <label class="block text-sm mb-2">Spent: ₦<span id="budgetA2">0</span> / ₦4,000,000</label>
+              <input type="range" min="0" max="4000000" value="0" class="w-full h-3 bg-gray-300 rounded-lg cursor-pointer" oninput="document.getElementById('budgetA2').textContent = this.value">
+            </div>
+            <h5 class="font-medium mt-6 mb-3 text-lg">Key Performance Metrics</h5>
+            <input type="number" class="border p-3 w-full rounded mb-2" placeholder="Main dataset size (GB / samples)">
+            <input type="number" class="border p-3 w-full rounded" placeholder="Analysis scripts / models completed">
+          </div>
+          <!-- Phase 3 -->
+          <div class="border-l-4 border-indigo-500 pl-6">
+            <h4 class="font-bold text-xl mb-2">Phase 3: Synthesis & Dissemination (Months 25–36)</h4>
+            <p class="text-gray-700 mb-4">Strategy: Finalize analysis, publish in high-impact journals, present at international conferences, archive data for open access.</p>
+            <h5 class="font-medium mb-3 text-lg">Execution Checklist</h5>
+            <div class="space-y-3">
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> 3+ peer-reviewed publications submitted / accepted</label>
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> International conference presentations delivered</label>
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> Data repository populated and DOI assigned</label>
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> Final project report and knowledge transfer completed</label>
+            </div>
+            <h5 class="font-medium mt-6 mb-3 text-lg">Budget Tracking</h5>
+            <div class="mb-4">
+              <label class="block text-sm mb-2">Spent: ₦<span id="budgetA3">0</span> / ₦2,500,000</label>
+              <input type="range" min="0" max="2500000" value="0" class="w-full h-3 bg-gray-300 rounded-lg cursor-pointer" oninput="document.getElementById('budgetA3').textContent = this.value">
+            </div>
+            <h5 class="font-medium mt-6 mb-3 text-lg">Key Performance Metrics</h5>
+            <input type="number" class="border p-3 w-full rounded mb-2" placeholder="Publications accepted">
+            <input type="number" class="border p-3 w-full rounded" placeholder="Conference presentations delivered">
+          </div>
         </div>
       </div>
     `;
   } else if (tr === 'B') {
     phasesHTML = `
-      <div class="space-y-10">
-        <div class="border-l-4 border-indigo-500 pl-6">
-          <h4 class="font-bold text-xl">Phase 1: Validation & MVP (Months 1–6)</h4>
-          <p class="text-gray-700 mt-2">Strategy: Build and validate MVP, acquire early users, refine based on feedback.</p>
-          <ul class="list-disc pl-6 mt-4 space-y-2">
-            <li><input type="checkbox" class="h-5 w-5"> MVP developed and launched</li>
-            <li><input type="checkbox" class="h-5 w-5"> Beta testing with 100+ users completed</li>
-            <li><input type="checkbox" class="h-5 w-5"> Product-market fit validated (NPS > 40)</li>
-            <li><input type="checkbox" class="h-5 w-5"> Initial revenue stream activated</li>
-          </ul>
+      <div class="space-y-12">
+        <div>
+          <h3 class="text-2xl font-bold mb-4">Overall Strategy</h3>
+          <p class="text-gray-700 mb-4">Accelerated path to market with focus on product validation, revenue growth, scalable operations, and investor readiness. Timeline: 24 months. Key principles: customer-centric iteration, unit economics, rapid traction.</p>
         </div>
-        <div class="border-l-4 border-indigo-500 pl-6">
-          <h4 class="font-bold text-xl">Phase 2: Growth & Revenue (Months 7–18)</h4>
-          <p class="text-gray-700 mt-2">Strategy: Scale acquisition, optimize economics, build repeatable sales process.</p>
-          <ul class="list-disc pl-6 mt-4 space-y-2">
-            <li><input type="checkbox" class="h-5 w-5"> 500+ paying customers acquired</li>
-            <li><input type="checkbox" class="h-5 w-5"> Monthly recurring revenue > ₦5M</li>
-            <li><input type="checkbox" class="h-5 w-5"> Customer acquisition cost payback < 12 months</li>
-            <li><input type="checkbox" class="h-5 w-5"> Marketing channels optimized</li>
-          </ul>
+        <div>
+          <h3 class="text-2xl font-bold mb-4">Visual Timeline (Gantt-style)</h3>
+          <canvas id="ganttChart" height="140"></canvas>
         </div>
-        <div class="border-l-4 border-indigo-500 pl-6">
-          <h4 class="font-bold text-xl">Phase 3: Expansion & Exit Prep (Months 19–36)</h4>
-          <p class="text-gray-700 mt-2">Strategy: Enter new markets, scale operations, prepare for funding round or exit.</p>
-          <ul class="list-disc pl-6 mt-4 space-y-2">
-            <li><input type="checkbox" class="h-5 w-5"> New regional market launched</li>
-            <li><input type="checkbox" class="h-5 w-5"> ARR > ₦50M achieved</li>
-            <li><input type="checkbox" class="h-5 w-5"> Investor-ready pitch deck & financials prepared</li>
-            <li><input type="checkbox" class="h-5 w-5"> Exit strategy roadmap defined</li>
-          </ul>
+        <div class="space-y-10">
+          <div class="border-l-4 border-indigo-500 pl-6">
+            <h4 class="font-bold text-xl mb-2">Phase 1: MVP & Validation (Months 1–6)</h4>
+            <p class="text-gray-700 mb-4">Strategy: Build MVP, validate with real users, achieve early traction, iterate based on feedback.</p>
+            <h5 class="font-medium mb-3 text-lg">Execution Checklist</h5>
+            <div class="space-y-3">
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> MVP developed and launched</label>
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> Beta testing with 100+ users completed</label>
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> Product-market fit validated (NPS > 40)</label>
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> Initial revenue stream activated</label>
+            </div>
+            <h5 class="font-medium mt-6 mb-3 text-lg">Budget Tracking</h5>
+            <div class="mb-4">
+              <label class="block text-sm mb-2">Spent: ₦<span id="budgetB1">0</span> / ₦4,000,000</label>
+              <input type="range" min="0" max="4000000" value="0" class="w-full h-3 bg-gray-300 rounded-lg cursor-pointer" oninput="document.getElementById('budgetB1').textContent = this.value">
+            </div>
+            <h5 class="font-medium mt-6 mb-3 text-lg">Key Performance Metrics</h5>
+            <input type="number" class="border p-3 w-full rounded mb-2" placeholder="Early users / customers acquired">
+            <input type="number" class="border p-3 w-full rounded" placeholder="Initial revenue generated (₦)">
+          </div>
+          <!-- Phase 2 -->
+          <div class="border-l-4 border-indigo-500 pl-6">
+            <h4 class="font-bold text-xl mb-2">Phase 2: Growth & Revenue (Months 7–18)</h4>
+            <p class="text-gray-700 mb-4">Strategy: Scale customer acquisition, optimize unit economics, build repeatable sales/marketing engine.</p>
+            <h5 class="font-medium mb-3 text-lg">Execution Checklist</h5>
+            <div class="space-y-3">
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> 500+ paying customers acquired</label>
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> Monthly recurring revenue > ₦5M</label>
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> CAC payback period < 12 months</label>
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> Marketing channels optimized (CAC reduced 30%+)</label>
+            </div>
+            <h5 class="font-medium mt-6 mb-3 text-lg">Budget Tracking</h5>
+            <div class="mb-4">
+              <label class="block text-sm mb-2">Spent: ₦<span id="budgetB2">0</span> / ₦3,500,000</label>
+              <input type="range" min="0" max="3500000" value="0" class="w-full h-3 bg-gray-300 rounded-lg cursor-pointer" oninput="document.getElementById('budgetB2').textContent = this.value">
+            </div>
+            <h5 class="font-medium mt-6 mb-3 text-lg">Key Performance Metrics</h5>
+            <input type="number" class="border p-3 w-full rounded mb-2" placeholder="Paying customers added this phase">
+            <input type="number" class="border p-3 w-full rounded" placeholder="MRR achieved (₦)">
+          </div>
+          <!-- Phase 3 -->
+          <div class="border-l-4 border-indigo-500 pl-6">
+            <h4 class="font-bold text-xl mb-2">Phase 3: Expansion & Exit Prep (Months 19–24)</h4>
+            <p class="text-gray-700 mb-4">Strategy: Expand to new markets, scale operations, prepare for funding round or strategic exit.</p>
+            <h5 class="font-medium mb-3 text-lg">Execution Checklist</h5>
+            <div class="space-y-3">
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> New regional market launched</label>
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> ARR > ₦50M achieved</label>
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> Investor-ready pitch deck & financial model completed</label>
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> Exit strategy roadmap defined</label>
+            </div>
+            <h5 class="font-medium mt-6 mb-3 text-lg">Budget Tracking</h5>
+            <div class="mb-4">
+              <label class="block text-sm mb-2">Spent: ₦<span id="budgetB3">0</span> / ₦2,500,000</label>
+              <input type="range" min="0" max="2500000" value="0" class="w-full h-3 bg-gray-300 rounded-lg cursor-pointer" oninput="document.getElementById('budgetB3').textContent = this.value">
+            </div>
+            <h5 class="font-medium mt-6 mb-3 text-lg">Key Metrics</h5>
+            <input type="number" class="border p-3 w-full rounded mb-2" placeholder="New market customers acquired">
+            <input type="number" class="border p-3 w-full rounded" placeholder="ARR achieved (₦)">
+          </div>
+        </div>
+        <div class="mt-12 bg-gray-100 p-6 rounded-xl">
+          <h3 class="text-2xl font-bold mb-4">Overall Progress</h3>
+          <div class="h-4 bg-gray-300 rounded-full overflow-hidden">
+            <div class="h-full bg-green-500" style="width:0%"></div>
+          </div>
+          <p class="text-center mt-2 text-gray-600">0% complete • ₦0 spent</p>
         </div>
       </div>
     `;
   } else {
     phasesHTML = `
-      <div class="space-y-10">
-        <div class="border-l-4 border-indigo-500 pl-6">
-          <h4 class="font-bold text-xl">Phase 1: Preparation & Baseline (Months 1–12)</h4>
-          <p class="text-gray-700 mt-2">Strategy: Establish baseline data, build partnerships, train teams, set up monitoring systems.</p>
-          <ul class="list-disc pl-6 mt-4 space-y-2">
-            <li><input type="checkbox" class="h-5 w-5"> Baseline survey and data collection completed</li>
-            <li><input type="checkbox" class="h-5 w-5"> Community leaders and stakeholders engaged</li>
-            <li><input type="checkbox" class="h-5 w-5"> MEL tools and indicators deployed</li>
-            <li><input type="checkbox" class="h-5 w-5"> Initial training of field staff completed</li>
-          </ul>
+      <div class="space-y-12">
+        <div>
+          <h3 class="text-2xl font-bold mb-4">Overall Strategy</h3>
+          <p class="text-gray-700 mb-4">Medium to long-term sustainable development with focus on measurable social/environmental impact, community ownership, and lasting systems change. Timeline: 36 months. Key principles: ToC, inclusion, adaptive MEL.</p>
         </div>
-        <div class="border-l-4 border-indigo-500 pl-6">
-          <h4 class="font-bold text-xl">Phase 2: Implementation & Scale (Months 13–24)</h4>
-          <p class="text-gray-700 mt-2">Strategy: Deliver core interventions at scale, monitor outcomes, adjust based on data.</p>
-          <ul class="list-disc pl-6 mt-4 space-y-2">
-            <li><input type="checkbox" class="h-5 w-5"> 10,000+ beneficiaries directly reached</li>
-            <li><input type="checkbox" class="h-5 w-5"> Mid-line evaluation conducted and reported</li>
-            <li><input type="checkbox" class="h-5 w-5"> Policy advocacy meetings and engagements held</li>
-            <li><input type="checkbox" class="h-5 w-5"> Outcome indicators showing positive trend</li>
-          </ul>
+        <div>
+          <h3 class="text-2xl font-bold mb-4">Visual Timeline (Gantt-style)</h3>
+          <canvas id="ganttChart" height="140"></canvas>
         </div>
-        <div class="border-l-4 border-indigo-500 pl-6">
-          <h4 class="font-bold text-xl">Phase 3: Sustainability & Exit (Months 25–36)</h4>
-          <p class="text-gray-700 mt-2">Strategy: Institutionalize impact, handover to local actors, conduct final evaluation.</p>
-          <ul class="list-disc pl-6 mt-4 space-y-2">
-            <li><input type="checkbox" class="h-5 w-5"> Local ownership and capacity transfer completed</li>
-            <li><input type="checkbox" class="h-5 w-5"> End-line evaluation and impact report finalized</li>
-            <li><input type="checkbox" class="h-5 w-5"> Sustainability plan documented and shared</li>
-            <li><input type="checkbox" class="h-5 w-5"> Project close-out and lessons learned workshop held</li>
-          </ul>
+        <div class="space-y-10">
+          <div class="border-l-4 border-indigo-500 pl-6">
+            <h4 class="font-bold text-xl mb-2">Phase 1: Preparation & Baseline (Months 1–12)</h4>
+            <p class="text-gray-700 mb-4">Strategy: Conduct rigorous baseline, build stakeholder trust, train teams, establish MEL framework.</p>
+            <h5 class="font-medium mb-3 text-lg">Execution Checklist</h5>
+            <div class="space-y-3">
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> Baseline survey and data collection completed</label>
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> Community leaders and stakeholders fully engaged</label>
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> MEL tools, indicators, and data collection systems deployed</label>
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> Field staff and partners trained</label>
+            </div>
+            <h5 class="font-medium mt-6 mb-3 text-lg">Budget Tracking</h5>
+            <div class="mb-4">
+              <label class="block text-sm mb-2">Spent: ₦<span id="budgetC1">0</span> / ₦3,000,000</label>
+              <input type="range" min="0" max="3000000" value="0" class="w-full h-3 bg-gray-300 rounded-lg cursor-pointer" oninput="document.getElementById('budgetC1').textContent = this.value">
+            </div>
+            <h5 class="font-medium mt-6 mb-3 text-lg">Key Metrics</h5>
+            <input type="number" class="border p-3 w-full rounded mb-2" placeholder="Beneficiaries mapped / enrolled">
+            <input type="number" class="border p-3 w-full rounded" placeholder="Partnership agreements signed">
+          </div>
+          <!-- Phase 2 -->
+          <div class="border-l-4 border-indigo-500 pl-6">
+            <h4 class="font-bold text-xl mb-2">Phase 2: Implementation & Scale (Months 13–24)</h4>
+            <p class="text-gray-700 mb-4">Strategy: Deliver interventions at scale, continuously monitor outcomes, adapt based on real-time data and feedback.</p>
+            <h5 class="font-medium mb-3 text-lg">Execution Checklist</h5>
+            <div class="space-y-3">
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> 10,000+ beneficiaries directly reached</label>
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> Mid-line evaluation conducted and findings acted upon</label>
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> Policy advocacy meetings and stakeholder engagements held</label>
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> Outcome indicators showing positive trend (mid-line data)</label>
+            </div>
+            <h5 class="font-medium mt-6 mb-3 text-lg">Budget Tracking</h5>
+            <div class="mb-4">
+              <label class="block text-sm mb-2">Spent: ₦<span id="budgetC2">0</span> / ₦4,000,000</label>
+              <input type="range" min="0" max="4000000" value="0" class="w-full h-3 bg-gray-300 rounded-lg cursor-pointer" oninput="document.getElementById('budgetC2').textContent = this.value">
+            </div>
+            <h5 class="font-medium mt-6 mb-3 text-lg">Key Metrics</h5>
+            <input type="number" class="border p-3 w-full rounded mb-2" placeholder="Beneficiaries reached this phase">
+            <input type="number" class="border p-3 w-full rounded" placeholder="Outcome indicator improvement (%)">
+          </div>
+          <!-- Phase 3 -->
+          <div class="border-l-4 border-indigo-500 pl-6">
+            <h4 class="font-bold text-xl mb-2">Phase 3: Sustainability & Exit (Months 25–36)</h4>
+            <p class="text-gray-700 mb-4">Strategy: Institutionalize impact, transfer ownership to local actors, conduct final evaluation, document lessons learned.</p>
+            <h5 class="font-medium mb-3 text-lg">Execution Checklist</h5>
+            <div class="space-y-3">
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> Local ownership and capacity transfer completed</label>
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> End-line evaluation and full impact report finalized</label>
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> Sustainability plan documented and handed over</label>
+              <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="h-6 w-6"> Project close-out workshop and lessons learned documented</label>
+            </div>
+            <h5 class="font-medium mt-6 mb-3 text-lg">Budget Tracking</h5>
+            <div class="mb-4">
+              <label class="block text-sm mb-2">Spent: ₦<span id="budgetC3">0</span> / ₦3,000,000</label>
+              <input type="range" min="0" max="3000000" value="0" class="w-full h-3 bg-gray-300 rounded-lg cursor-pointer" oninput="document.getElementById('budgetC3').textContent = this.value">
+            </div>
+            <h5 class="font-medium mt-6 mb-3 text-lg">Key Metrics</h5>
+            <input type="number" class="border p-3 w-full rounded mb-2" placeholder="Beneficiaries with sustained outcomes">
+            <input type="number" class="border p-3 w-full rounded" placeholder="Local actors trained / capacitated">
+          </div>
+        </div>
+        <div class="mt-12 bg-gray-100 p-6 rounded-xl">
+          <h3 class="text-2xl font-bold mb-4">Overall Progress</h3>
+          <div class="h-4 bg-gray-300 rounded-full overflow-hidden">
+            <div class="h-full bg-green-500" style="width:0%"></div>
+          </div>
+          <p class="text-center mt-2 text-gray-600">0% complete • ₦0 spent</p>
         </div>
       </div>
     `;
   }
 
-  const fullContent = `
-    ${phasesHTML}
+  document.getElementById('execution-content').innerHTML = phasesHTML;
 
-    <div class="mt-12">
-      <h3 class="text-2xl font-bold mb-6">Budget & Progress Overview</h3>
-      <div class="bg-gray-100 p-6 rounded-xl">
-        <p class="text-gray-700 mb-4 font-medium">Total Budget: ₦10,000,000</p>
-        <div class="mb-6">
-          <label class="block text-sm font-medium mb-2">Budget Spent: ₦<span id="budget-spent">0</span> / ₦10,000,000</label>
-          <input type="range" min="0" max="10000000" value="0" class="w-full h-3 bg-gray-300 rounded-lg appearance-none cursor-pointer" id="budget-slider" oninput="document.getElementById('budget-spent').textContent = this.value">
-        </div>
-        <p class="text-sm text-gray-600">Overall Progress: <span id="overall-progress">0%</span></p>
-      </div>
-    </div>
-
-    <div class="mt-12">
-      <h3 class="text-2xl font-bold mb-6">Key Performance Metrics</h3>
-      <div class="grid md:grid-cols-3 gap-6">
-        <div class="bg-gray-50 p-6 rounded-xl text-center">
-          <input type="number" id="metric-1" value="0" class="text-2xl font-bold text-indigo-600 w-20 text-center border-b" onchange="updateMetric(1, this.value)">
-          <p class="text-gray-600 mt-2">${tr === 'A' ? 'Publications / Patents Filed' : tr === 'B' ? 'Paying Customers Acquired' : 'Beneficiaries Reached'}</p>
-        </div>
-        <div class="bg-gray-50 p-6 rounded-xl text-center">
-          <input type="number" id="metric-2" value="0" class="text-2xl font-bold text-indigo-600 w-20 text-center border-b" onchange="updateMetric(2, this.value)">%
-          <p class="text-gray-600 mt-2">Deliverables Completed</p>
-        </div>
-        <div class="bg-gray-50 p-6 rounded-xl text-center">
-          <input type="number" id="metric-3" value="0" class="text-2xl font-bold text-indigo-600 w-32 text-center border-b" onchange="updateMetric(3, this.value)">
-          <p class="text-gray-600 mt-2">${tr === 'A' ? 'Data Points Collected' : tr === 'B' ? 'Revenue Generated (₦)' : 'Impact Value Generated (₦)'}</p>
-        </div>
-      </div>
-    </div>
-  `;
-
-  document.getElementById('execution-content').innerHTML = fullContent;
-
-  // Gantt-style chart
+  // Gantt-style chart (visual timeline)
   const ctx = document.createElement('canvas');
-  ctx.height = 120;
-  document.querySelector('#execution-content .bg-gray-100').appendChild(ctx);
+  ctx.height = 140;
+  document.querySelector('#execution-content canvas')?.parentNode.appendChild(ctx);
   new Chart(ctx, {
     type: 'bar',
     data: {
       labels: ['Phase 1', 'Phase 2', 'Phase 3'],
       datasets: [{
         label: 'Duration',
-        data: tr === 'A' ? [12, 12, 12] : tr === 'B' ? [6, 12, 18] : [12, 12, 12],
+        data: tr === 'A' ? [12, 12, 12] : tr === 'B' ? [6, 12, 6] : [12, 12, 12],
         backgroundColor: '#6366f1',
-        barThickness: 30
+        barThickness: 40
       }]
     },
     options: {
@@ -658,7 +699,7 @@ function showExecution() {
 }
 
 // ───────────────────────────────────────────────
-// Project Progress Dashboard (new – as requested)
+// Project Progress Dashboard (full as requested)
 // ───────────────────────────────────────────────
 function showProgressDashboard() {
   showScreen('screen-progress');
@@ -669,12 +710,22 @@ function showProgressDashboard() {
 function switchDashboardMode(mode) {
   document.getElementById('owner-view').classList.toggle('hidden', mode !== 'owner');
   document.getElementById('admin-view').classList.toggle('hidden', mode !== 'admin');
+  document.getElementById('owner-tab').classList.toggle('bg-indigo-600', mode === 'owner');
+  document.getElementById('owner-tab').classList.toggle('text-white', mode === 'owner');
+  document.getElementById('owner-tab').classList.toggle('bg-gray-200', mode !== 'owner');
+  document.getElementById('admin-tab').classList.toggle('bg-indigo-600', mode === 'admin');
+  document.getElementById('admin-tab').classList.toggle('text-white', mode === 'admin');
+  document.getElementById('admin-tab').classList.toggle('bg-gray-200', mode !== 'admin');
   if (mode === 'admin') renderAdminView();
 }
 
 function loadProgressData() {
   const saved = localStorage.getItem('essProgressData');
   if (saved) progressData = JSON.parse(saved);
+  else {
+    const tr = analysisResult ? analysisResult.primaryTrack : 'B';
+    progressData.phases = getDefaultPhases(tr);
+  }
   renderOwnerView();
 }
 
@@ -682,28 +733,46 @@ function saveProgressData() {
   localStorage.setItem('essProgressData', JSON.stringify(progressData));
 }
 
+function getDefaultPhases(tr) {
+  if (tr === 'A') return [
+    {name:"Foundation (Months 1–12)", start:"", end:"", checklist:[{text:"Ethics/IRB approval obtained",done:false},{text:"Literature review completed",done:false},{text:"Pilot data collected",done:false}], spent:0, targetBudget:3500000},
+    {name:"Core Research (Months 13–24)", start:"", end:"", checklist:[{text:"Primary dataset collected",done:false},{text:"Analysis completed",done:false}], spent:0, targetBudget:4000000},
+    {name:"Synthesis & Dissemination (Months 25–36)", start:"", end:"", checklist:[{text:"Publications submitted",done:false},{text:"Data archived",done:false}], spent:0, targetBudget:2500000}
+  ];
+  if (tr === 'B') return [
+    {name:"MVP & Validation (Months 1–6)", start:"", end:"", checklist:[{text:"MVP launched",done:false},{text:"Beta testing completed",done:false}], spent:0, targetBudget:4000000},
+    {name:"Growth & Revenue (Months 7–18)", start:"", end:"", checklist:[{text:"500+ paying customers",done:false},{text:"MRR > ₦5M",done:false}], spent:0, targetBudget:3500000},
+    {name:"Expansion & Exit Prep (Months 19–24)", start:"", end:"", checklist:[{text:"New market launched",done:false},{text:"ARR > ₦50M",done:false}], spent:0, targetBudget:2500000}
+  ];
+  return [
+    {name:"Preparation & Baseline (Months 1–12)", start:"", end:"", checklist:[{text:"Baseline survey completed",done:false},{text:"Stakeholders engaged",done:false}], spent:0, targetBudget:3000000},
+    {name:"Implementation & Scale (Months 13–24)", start:"", end:"", checklist:[{text:"10,000+ beneficiaries reached",done:false},{text:"Mid-line evaluation done",done:false}], spent:0, targetBudget:4000000},
+    {name:"Sustainability & Exit (Months 25–36)", start:"", end:"", checklist:[{text:"Ownership transferred",done:false},{text:"End-line evaluation done",done:false}], spent:0, targetBudget:3000000}
+  ];
+}
+
 function renderOwnerView() {
   let html = '';
   progressData.phases.forEach((phase, i) => {
     const progress = phase.checklist.length ? Math.round(phase.checklist.filter(c => c.done).length / phase.checklist.length * 100) : 0;
     html += `
-      <div class="border rounded-2xl p-6 bg-white shadow-sm">
+      <div class="border rounded-2xl p-6 bg-white shadow-sm mb-6">
         <h4 class="font-bold text-lg">${phase.name}</h4>
         <div class="grid grid-cols-2 gap-4 mt-4">
           <div>Start: <input type="date" value="${phase.start||''}" onchange="updatePhase(${i},'start',this.value)" class="border p-2 rounded w-full"></div>
           <div>End: <input type="date" value="${phase.end||''}" onchange="updatePhase(${i},'end',this.value)" class="border p-2 rounded w-full"></div>
         </div>
         <div class="mt-6">
-          <h5 class="font-medium mb-3">Checklist (${progress}%)</h5>
+          <h5 class="font-medium mb-3">Checklist (${progress}% complete)</h5>
           ${phase.checklist.map((item,j) => `
-            <label class="flex items-center gap-2 mb-2 cursor-pointer">
-              <input type="checkbox" ${item.done?'checked':''} onchange="toggleChecklist(${i},${j},this.checked)" class="h-5 w-5">
+            <label class="flex items-center gap-3 mb-3 cursor-pointer">
+              <input type="checkbox" ${item.done?'checked':''} onchange="toggleChecklist(${i},${j},this.checked)" class="h-6 w-6">
               ${item.text}
             </label>
           `).join('')}
         </div>
-        <div class="mt-6">
-          <h5 class="font-medium mb-2">Budget Spent (₦${phase.spent||0} / ₦${phase.targetBudget||10000000})</h5>
+        <div class="mt-8">
+          <h5 class="font-medium mb-3">Budget Spent (₦${phase.spent||0} / ₦${phase.targetBudget||10000000})</h5>
           <input type="range" min="0" max="${phase.targetBudget||10000000}" value="${phase.spent||0}" class="w-full h-3 bg-gray-300 rounded-lg appearance-none cursor-pointer" oninput="updateSpent(${i},this.value)">
         </div>
       </div>
@@ -717,54 +786,4 @@ function updatePhase(i, field, value) {
   saveProgressData();
 }
 
-function toggleChecklist(i, j, done) {
-  progressData.phases[i].checklist[j].done = done;
-  saveProgressData();
-  renderOwnerView();
-}
-
-function updateSpent(i, value) {
-  progressData.phases[i].spent = parseFloat(value) || 0;
-  saveProgressData();
-  renderOwnerView();
-}
-
-function renderAdminView() {
-  let html = '';
-  progressData.phases.forEach(phase => {
-    const doneCount = phase.checklist.filter(c => c.done).length;
-    const progress = phase.checklist.length ? Math.round(doneCount / phase.checklist.length * 100) : 0;
-    html += `
-      <div class="border rounded-2xl p-6 bg-white shadow-sm">
-        <h4 class="font-bold text-lg">${phase.name}</h4>
-        <div class="h-3 bg-gray-200 rounded-full overflow-hidden mt-4">
-          <div class="h-full bg-green-500 transition-all" style="width:${progress}%"></div>
-        </div>
-        <div class="text-sm text-gray-600 mt-1">${progress}% complete • Spent: ₦${phase.spent||0} / ₦${phase.targetBudget||10000000}</div>
-      </div>
-    `;
-  });
-  document.getElementById('admin-progress').innerHTML = html;
-}
-
-function sendAdminMessage() {
-  const msg = document.getElementById('admin-message').value.trim();
-  if (msg) {
-    alert('Message sent to Project Owner:\n\n' + msg);
-    document.getElementById('admin-message').value = '';
-  }
-}
-
-// ───────────────────────────────────────────────
-// Start (unchanged)
-// ───────────────────────────────────────────────
-if (localStorage.getItem('essQuestionnaire')) {
-  answers = JSON.parse(localStorage.getItem('essQuestionnaire'));
-  showScreen('screen-result');
-  renderQuestionnaireResult();
-} else {
-  renderQuestion();
-}
-</script>
-</body>
-</html>
+function toggleChecklist(i, j, done)
