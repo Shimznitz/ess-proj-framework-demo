@@ -333,6 +333,18 @@ function showScreen(id) {
   document.getElementById(id).classList.add('active');
 }
 
+  function goBackToExecution() {
+  showScreen('screen-execution');
+}
+
+function goBackToAnalysis() {
+  showScreen('screen-analysis');
+}
+
+function goBackToResult() {
+  showScreen('screen-result');
+}
+
 // ───────────────────────────────────────────────
 // Printable Phases (MOVED UP so it's defined before use)
 // ───────────────────────────────────────────────
@@ -1072,3 +1084,4 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 </body>
 </html>
+
