@@ -916,53 +916,159 @@ function showExecution() {
 // ───────────────────────────────────────────────
 // Dashboard Role Choice & Views
 // ───────────────────────────────────────────────
+
 function showDashboardChoice() {
+  renderOwnerView();
+  renderAdminView();
   showScreen('screen-dashboard-choice');
 }
 
-function showProgressDashboard() {
-  showScreen('screen-progress');
-  loadProgressData();
-}
+// ================= OWNER DASHBOARD =================
 
-// Owner Dashboard functions
 function renderOwnerView() {
+  if (!progressData.phases.length) {
+    progressData.phases = [
+      { name: "Phase 1", start: "", end: "", checklist: [] },
+      { name: "Phase 2", start: "", end: "", checklist: [] },
+      { name: "Phase 3", start: "", end: "", checklist: [] }
+    ];
+  }
+
   let html = '';
+
   progressData.phases.forEach((phase, i) => {
-    const progress = phase.checklist.length ? Math.round(phase.checklist.filter(c => c.done).length / phase.checklist.length * 100) : 0;
+
+    const progress = calculatePhaseProgress(phase);
+
     html += `
       <div class="border rounded-2xl p-6 bg-white shadow-sm mb-6">
-        <h4 class="font-bold text-lg">${phase.name}</h4>
-        <div class="grid grid-cols-2 gap-4 mt-4">
-          <div>Start: <input type="date" value="${phase.start||''}" onchange="updatePhase(${i},'start',this.value)" class="border p-2 rounded w-full"></div>
-          <div>End: <input type="date" value="${phase.end||''}" onchange="updatePhase(${i},'end',this.value)" class="border p-2 rounded w-full"></div>
+        <h4 class="font-bold text-xl mb-4">${phase.name}</h4>
+
+        <div class="grid md:grid-cols-2 gap-6 mb-4">
+                    <div>
+            <label class="block text-sm font-medium mb-2">Start Date</label>
+            <input type="date"
+                   value="${phase.start || ''}"
+                   onchange="updatePhase(${i}, 'start', this.value)"
+                   class="border p-3 rounded w-full">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-2">End Date</label>
+            <input type="date"
+                   value="${phase.end || ''}"
+                   onchange="updatePhase(${i}, 'end', this.value)"
+                   class="border p-3 rounded w-full">
+          </div>
         </div>
-        <div class="mt-6">
-          <h5 class="font-medium mb-3">Checklist (${progress}%)</h5>
-          ${phase.checklist.map((item,j) => `
-            <label class="flex items-center gap-3 mb-3 cursor-pointer">
-              <input type="checkbox" ${item.done?'checked':''} onchange="toggleChecklist(${i},${j},this.checked)" class="h-6 w-6">
-              ${item.text}
-            </label>
-          `).join('')}
-        </div>
-        <div class="mt-8">
-          <h5 class="font-medium mb-3">Budget Spent (₦${phase.spent||0} / ₦${phase.targetBudget||10000000})</h5>
-          <input type="range" min="0" max="${phase.targetBudget||10000000}" value="${phase.spent||0}" class="w-full h-3 bg-gray-300 rounded-lg appearance-none cursor-pointer" oninput="updateSpent(${i},this.value)">
+
+        <div class="mb-4">
+          <div class="h-3 bg-gray-200 rounded-full">
+            <div class="h-3 bg-indigo-600 rounded-full transition-all"
+                 style="width:${progress}%"></div>
+          </div>
+          <p class="text-sm mt-2 text-gray-600">${progress}% complete</p>
         </div>
       </div>
     `;
   });
+
   document.getElementById('owner-phases').innerHTML = html;
+  calculateOwnerSummary();
 }
 
-// Admin Dashboard functions
+function calculatePhaseProgress(phase) {
+  if (!phase.start || !phase.end) return 0;
+
+  const start = new Date(phase.start);
+  const end = new Date(phase.end);
+  const today = new Date();
+
+  if (today <= start) return 0;
+  if (today >= end) return 100;
+
+  const total = end - start;
+  const elapsed = today - start;
+
+  return Math.round((elapsed / total) * 100);
+}
+
+function updatePhase(index, key, value) {
+  progressData.phases[index][key] = value;
+  saveProgressData();
+  renderOwnerView();
+  renderAdminView();
+}
+
+function calculateOwnerSummary() {
+  const progresses = progressData.phases.map(p => calculatePhaseProgress(p));
+  const avg = progresses.length
+    ? Math.round(progresses.reduce((a,b)=>a+b,0) / progresses.length)
+    : 0;
+
+  document.getElementById('owner-progress').textContent = avg + "%";
+}
+
+function saveProgressData() {
+  progressData.overallStart = document.getElementById('overall-start')?.value || '';
+  progressData.overallEnd = document.getElementById('overall-end')?.value || '';
+  localStorage.setItem('essProgressData', JSON.stringify(progressData));
+}
+
+// ================= ADMIN DASHBOARD =================
+
 function renderAdminView() {
   let html = '';
-  progressData.phases.forEach(phase => {
-    const doneCount = phase.checklist.filter(c => c.done).length;
-    const progress = phase.checklist.length ? Math.round(doneCount / phase.checklist.length * 100) : 0;
+
+  progressData.phases.forEach((phase) => {
+    const progress = calculatePhaseProgress(phase);
+
     html += `
       <div class="border rounded-2xl p-6 bg-white shadow-sm mb-6">
-        <h4 class="font-bold text-lg">${phase.name}</h4>
-        <div class="h-4 bg-gray-200 rounded
+        <h4 class="font-bold text-xl mb-2">${phase.name}</h4>
+        <p class="text-sm text-gray-500 mb-4">
+          ${phase.start || "No start date"} → ${phase.end || "No end date"}
+        </p>
+
+        <div class="h-3 bg-gray-200 rounded-full">
+          <div class="h-3 bg-green-600 rounded-full transition-all"
+               style="width:${progress}%"></div>
+        </div>
+        <p class="text-sm mt-2 text-gray-600">${progress}% complete</p>
+      </div>
+    `;
+  });
+
+  document.getElementById('admin-phases').innerHTML = html;
+}
+
+function sendAdminMessage() {
+  const msg = document.getElementById('admin-message').value;
+  if (!msg.trim()) {
+    alert("Please type a message first.");
+    return;
+  }
+
+  alert("Message sent to Project Owner.");
+  document.getElementById('admin-message').value = "";
+}
+
+// ───────────────────────────────────────────────
+// INITIAL LOAD
+// ───────────────────────────────────────────────
+
+document.addEventListener("DOMContentLoaded", function () {
+  renderQuestion();
+
+  if (progressData.overallStart)
+    document.getElementById('overall-start').value = progressData.overallStart;
+
+  if (progressData.overallEnd)
+    document.getElementById('overall-end').value = progressData.overallEnd;
+
+  renderOwnerView();
+  renderAdminView();
+});
+</script>
+</body>
+</html>
