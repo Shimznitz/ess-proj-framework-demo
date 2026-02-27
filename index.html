@@ -255,9 +255,7 @@
 </div>
 
 <script>
-// ───────────────────────────────────────────────
-// Data & Globals (full from your working version)
-// ───────────────────────────────────────────────
+// Data & Globals
 let currentQ = 0;
 let answers = new Array(10).fill(null);
 let analysisResult = null;
@@ -954,3 +952,4 @@ function renderAdminView() {
   progressData.phases.forEach(phase => {
     const doneCount = phase.checklist.filter(c => c.done).length;
     const progress = phase.checklist.length ? Math.round(doneCount / phase.checklist.length *
+
