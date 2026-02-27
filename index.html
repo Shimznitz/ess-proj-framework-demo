@@ -147,7 +147,7 @@
     </div>
   </div>
 
-  <!-- ───── SCREEN 4 – Execution & Implementation (now fully fleshed out) ───── -->
+  <!-- ───── SCREEN 4 – Execution & Implementation ───── -->
   <div id="screen-execution" class="screen">
     <div class="bg-white rounded-2xl shadow-lg p-8 md:p-12">
       <button onclick="goBackToAnalysis()" class="back-btn mb-8">
@@ -157,10 +157,12 @@
       <p id="execution-track" class="text-xl text-center mb-10 font-medium"></p>
       <div id="execution-content" class="prose max-w-none text-gray-800"></div>
       <div class="mt-16 text-center space-y-6">
-        <button onclick="showDashboardChoice()" class="px-12 py-5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-lg rounded-xl">
+        <button onclick="showDashboardChoice()"
+                class="px-12 py-5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-lg rounded-xl">
           Go to Project Progress Dashboard
         </button>
-        <button onclick="showPrintableFramework()" class="px-12 py-5 bg-green-600 hover:bg-green-700 text-white font-bold text-lg rounded-xl">
+        <button onclick="showPrintableFramework()"
+                class="px-12 py-5 bg-green-600 hover:bg-green-700 text-white font-bold text-lg rounded-xl">
           View Full Printable Implementation Framework →
         </button>
       </div>
@@ -255,7 +257,9 @@
 </div>
 
 <script>
+// ───────────────────────────────────────────────
 // Data & Globals
+// ───────────────────────────────────────────────
 let currentQ = 0;
 let answers = new Array(10).fill(null);
 let analysisResult = null;
@@ -279,29 +283,29 @@ const questions = [
             {emoji:"🛒", text:"Paying customers or market segments", track:"B"},
             {emoji:"👥", text:"Specific vulnerable or underserved communities", track:"C"}]},
   {id:4, text:"What type of funding are you primarily targeting?",
-   options:[{emoji:"🏛️", text:"Competitive research grants (NSF, NIH, TETFund…)", track:"A"},
-            {emoji:"💼", text:"Venture capital, private equity, corporate funds", track:"B"},
-            {emoji:"🤝", text:"Philanthropic foundations, development agencies", track:"C"}]},
+   options:[{emoji:"🏛️", text:"Competitive research grants (NSF, NIH, TETFund, national academies)", track:"A"},
+            {emoji:"💼", text:"Venture capital, private equity, or corporate innovation funds", track:"B"},
+            {emoji:"🤝", text:"Philanthropic foundations or development agencies (USAID, Gates, UNDP)", track:"C"}]},
   {id:5, text:"The project timeline is best characterized as:",
    options:[{emoji:"📅", text:"Long-term exploratory research (3–7+ years)", track:"A"},
             {emoji:"🚀", text:"Accelerated path to market (1–3 years)", track:"B"},
             {emoji:"🌱", text:"Medium to long-term sustainable development (3–10+ years)", track:"C"}]},
   {id:6, text:"The biggest risk in the project is:",
    options:[{emoji:"🧪", text:"Technical feasibility or scientific uncertainty", track:"A"},
-            {emoji:"📉", text:"Market acceptance, competition, financial viability", track:"B"},
-            {emoji:"🌧️", text:"Stakeholder adoption, policy, external factors", track:"C"}]},
+            {emoji:"📉", text:"Market acceptance, competition, or financial viability", track:"B"},
+            {emoji:"🌧️", text:"Stakeholder adoption, policy, or external factors", track:"C"}]},
   {id:7, text:"Your preferred Intellectual Property approach is:",
-   options:[{emoji:"📖", text:"Open publication (possible patents for credit)", track:"A"},
-            {emoji:"🔒", text:"Strong IP protection for licensing / commercialization", track:"B"},
+   options:[{emoji:"📖", text:"Open publication to advance knowledge (possible patents for credit)", track:"A"},
+            {emoji:"🔒", text:"Strong IP protection for licensing and commercialization", track:"B"},
             {emoji:"🔓", text:"Open-source or community-managed for public good", track:"C"}]},
   {id:8, text:"The project mainly requires:",
-   options:[{emoji:"🔬", text:"Specialized lab, computing, analytical equipment", track:"A"},
-            {emoji:"🏭", text:"Prototyping, manufacturing, marketing resources", track:"B"},
-            {emoji:"🤝", text:"Field sites, community training, monitoring tools", track:"C"}]},
+   options:[{emoji:"🔬", text:"Specialized laboratory, computing, or analytical equipment", track:"A"},
+            {emoji:"🏭", text:"Prototyping, manufacturing, or marketing resources", track:"B"},
+            {emoji:"🤝", text:"Field sites, community training, and monitoring tools", track:"C"}]},
   {id:9, text:"The broader impact you want to achieve is:",
    options:[{emoji:"🌟", text:"Paradigm-shifting discoveries in the academic field", track:"A"},
-            {emoji:"🏗️", text:"Economic growth, jobs, startup/exit success", track:"B"},
-            {emoji:"⚖️", text:"Social equity, environmental restoration, policy change", track:"C"}]},
+            {emoji:"🏗️", text:"Economic growth, jobs, or successful startup/exit", track:"B"},
+            {emoji:"⚖️", text:"Social equity, environmental restoration, or policy influence", track:"C"}]},
   {id:10,text:"This project is most inspired by:",
    options:[{emoji:"📖", text:"Unresolved questions in scientific literature", track:"A"},
             {emoji:"💡", text:"Identified market gaps or customer pain points", track:"B"},
@@ -322,7 +326,7 @@ const signatures = {
 };
 
 // ───────────────────────────────────────────────
-// Navigation (added new screens)
+// Navigation
 // ───────────────────────────────────────────────
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -330,7 +334,131 @@ function showScreen(id) {
 }
 
 // ───────────────────────────────────────────────
-// Questionnaire (unchanged)
+// Printable Phases (MOVED UP so it's defined before use)
+// ───────────────────────────────────────────────
+function generatePrintablePhases(tr) {
+  if (tr === 'A') {
+    return `
+      <div>
+        <h3 class="text-xl font-bold mb-4">Phase 1: Foundation (Months 1–12)</h3>
+        <p class="text-gray-700">Strategy: Secure approvals, collect pilot data, validate methods.</p>
+        <ul class="list-disc pl-6 mt-2">
+          <li>Ethics/IRB approval</li>
+          <li>Literature review & gap analysis</li>
+          <li>Pilot data collection</li>
+          <li>Methods validation</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="text-xl font-bold mb-4">Phase 2: Core Research (Months 13–24)</h3>
+        <p class="text-gray-700">Strategy: Execute main experiments, analyze data, draft manuscripts.</p>
+        <ul class="list-disc pl-6 mt-2">
+          <li>Primary dataset collection</li>
+          <li>Advanced analysis</li>
+          <li>Manuscript drafting</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="text-xl font-bold mb-4">Phase 3: Synthesis & Dissemination (Months 25–36)</h3>
+        <p class="text-gray-700">Strategy: Publish, present, archive data.</p>
+        <ul class="list-disc pl-6 mt-2">
+          <li>Peer-reviewed publications</li>
+          <li>Conference presentations</li>
+          <li>Data repository</li>
+        </ul>
+      </div>
+    `;
+  }
+  if (tr === 'B') {
+    return `
+      <div>
+        <h3 class="text-xl font-bold mb-4">Phase 1: MVP & Validation (Months 1–6)</h3>
+        <p class="text-gray-700">Strategy: Build MVP, validate with users, achieve traction.</p>
+        <ul class="list-disc pl-6 mt-2">
+          <li>MVP launch</li>
+          <li>Beta testing</li>
+          <li>Product-market fit</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="text-xl font-bold mb-4">Phase 2: Growth & Revenue (Months 7–18)</h3>
+        <p class="text-gray-700">Strategy: Scale acquisition, optimize economics.</p>
+        <ul class="list-disc pl-6 mt-2">
+          <li>500+ customers</li>
+          <li>MRR growth</li>
+          <li>CAC optimization</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="text-xl font-bold mb-4">Phase 3: Expansion & Exit (Months 19–24)</h3>
+        <p class="text-gray-700">Strategy: New markets, prepare for funding/exit.</p>
+        <ul class="list-disc pl-6 mt-2">
+          <li>New market launch</li>
+          <li>ARR milestone</li>
+          <li>Investor materials</li>
+        </ul>
+      </div>
+    `;
+  }
+  return `
+    <div>
+      <h3 class="text-xl font-bold mb-4">Phase 1: Preparation & Baseline (Months 1–12)</h3>
+      <p class="text-gray-700">Strategy: Baseline, partnerships, MEL setup.</p>
+      <ul class="list-disc pl-6 mt-2">
+        <li>Baseline survey</li>
+        <li>Stakeholder engagement</li>
+        <li>MEL framework</li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="text-xl font-bold mb-4">Phase 2: Implementation & Scale (Months 13–24)</h3>
+      <p class="text-gray-700">Strategy: Scale interventions, monitor, adapt.</p>
+      <ul class="list-disc pl-6 mt-2">
+        <li>10,000+ beneficiaries</li>
+        <li>Mid-line evaluation</li>
+        <li>Policy advocacy</li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="text-xl font-bold mb-4">Phase 3: Sustainability & Exit (Months 25–36)</h3>
+      <p class="text-gray-700">Strategy: Handover, final evaluation, sustainability plan.</p>
+      <ul class="list-disc pl-6 mt-2">
+        <li>Ownership transfer</li>
+        <li>End-line evaluation</li>
+        <li>Sustainability plan</li>
+      </ul>
+    </div>
+  `;
+}
+
+// ───────────────────────────────────────────────
+// Printable Framework
+// ───────────────────────────────────────────────
+function showPrintableFramework() {
+  if (!analysisResult) return alert('No analysis result.');
+  const tr = analysisResult.primaryTrack;
+  const title = `Full Implementation & Execution Framework – Track ${trackInfo[tr].letter} (${trackInfo[tr].name})`;
+  let content = `
+    <h1 class="text-4xl font-bold mb-10">${title}</h1>
+    <p class="text-xl text-gray-700 mb-12">This is the complete implementation and execution framework for your project track, including phases, strategies, checklists, budget guidelines, and metrics.</p>
+    <div class="space-y-16">
+      <div>
+        <h2 class="text-2xl font-bold mb-6">Overall Strategy & Timeline</h2>
+        <p class="text-gray-700">${tr === 'A' ? '36-month research-focused plan emphasizing novelty, rigor, and open dissemination.' : tr === 'B' ? '24-month commercial plan focused on MVP, growth, and revenue scaling.' : '36-month impact plan focused on sustainability and community ownership.'}</p>
+      </div>
+      <div class="space-y-12">
+        ${generatePrintablePhases(tr)}
+      </div>
+    </div>
+  `;
+
+  document.getElementById('print-title').textContent = title;
+  document.getElementById('print-content').innerHTML = content;
+  showScreen('screen-printable');
+}
+
+// ───────────────────────────────────────────────
+// Questionnaire Functions (unchanged)
 // ───────────────────────────────────────────────
 function renderQuestion() {
   const q = questions[currentQ];
@@ -395,12 +523,14 @@ function renderQuestionnaireResult() {
   const data = [scores.A, scores.B, scores.C];
 
   new Chart(document.getElementById('barChart'), {
-    type: 'bar', data: {labels, datasets:[{data, backgroundColor:['#4f46e5','#10b981','#f59e0b']}]},
+    type: 'bar',
+    data: {labels, datasets:[{data, backgroundColor:['#4f46e5','#10b981','#f59e0b']}]},
     options: {indexAxis:'y', plugins:{legend:{display:false}}, scales:{x:{max:10}}}
   });
 
   new Chart(document.getElementById('pieChart'), {
-    type: 'doughnut', data: {labels, datasets:[{data:data.map(v=>v*10), backgroundColor:['#4f46e5','#10b981','#f59e0b']}]},
+    type: 'doughnut',
+    data: {labels, datasets:[{data:data.map(v=>v*10), backgroundColor:['#4f46e5','#10b981','#f59e0b']}]},
     options: {cutout:'65%', plugins:{legend:{position:'bottom'}}}
   });
 }
@@ -784,126 +914,6 @@ function showExecution() {
 }
 
 // ───────────────────────────────────────────────
-// Printable Framework – now shows implementation
-// ───────────────────────────────────────────────
-function showPrintableFramework() {
-  if (!analysisResult) return alert('No analysis result.');
-  const tr = analysisResult.primaryTrack;
-  const title = `Full Implementation & Execution Framework – Track ${trackInfo[tr].letter} (${trackInfo[tr].name})`;
-  let content = `
-    <h1 class="text-4xl font-bold mb-10">${title}</h1>
-    <p class="text-xl text-gray-700 mb-12">This is the complete implementation and execution framework for your project track, including phases, strategies, checklists, budget guidelines, and metrics.</p>
-    <div class="space-y-16">
-      <div>
-        <h2 class="text-2xl font-bold mb-6">Overall Strategy & Timeline</h2>
-        <p class="text-gray-700">${tr === 'A' ? '36-month research-focused plan emphasizing novelty, rigor, and open dissemination.' : tr === 'B' ? '24-month commercial plan focused on MVP, growth, and revenue scaling.' : '36-month impact plan focused on sustainability and community ownership.'}</p>
-      </div>
-      <div class="space-y-12">
-        ${generatePrintablePhases(tr)}
-      </div>
-    </div>
-  `;
-  document.getElementById('print-title').textContent = title;
-  document.getElementById('print-content').innerHTML = content;
-  showScreen('screen-printable');
-}
-
-function generatePrintablePhases(tr) {
-  if (tr === 'A') {
-    return `
-      <div>
-        <h3 class="text-xl font-bold mb-4">Phase 1: Foundation (Months 1–12)</h3>
-        <p class="text-gray-700">Strategy: Secure approvals, collect pilot data, validate methods.</p>
-        <ul class="list-disc pl-6 mt-2">
-          <li>Ethics/IRB approval</li>
-          <li>Literature review & gap analysis</li>
-          <li>Pilot data collection</li>
-          <li>Methods validation</li>
-        </ul>
-      </div>
-      <div>
-        <h3 class="text-xl font-bold mb-4">Phase 2: Core Research (Months 13–24)</h3>
-        <p class="text-gray-700">Strategy: Execute main experiments, analyze data, draft manuscripts.</p>
-        <ul class="list-disc pl-6 mt-2">
-          <li>Primary dataset collection</li>
-          <li>Advanced analysis</li>
-          <li>Manuscript drafting</li>
-        </ul>
-      </div>
-      <div>
-        <h3 class="text-xl font-bold mb-4">Phase 3: Synthesis & Dissemination (Months 25–36)</h3>
-        <p class="text-gray-700">Strategy: Publish, present, archive data.</p>
-        <ul class="list-disc pl-6 mt-2">
-          <li>Peer-reviewed publications</li>
-          <li>Conference presentations</li>
-          <li>Data repository</li>
-        </ul>
-      </div>
-    `;
-  }
-  if (tr === 'B') {
-    return `
-      <div>
-        <h3 class="text-xl font-bold mb-4">Phase 1: MVP & Validation (Months 1–6)</h3>
-        <p class="text-gray-700">Strategy: Build MVP, validate with users, achieve traction.</p>
-        <ul class="list-disc pl-6 mt-2">
-          <li>MVP launch</li>
-          <li>Beta testing</li>
-          <li>Product-market fit</li>
-        </ul>
-      </div>
-      <div>
-        <h3 class="text-xl font-bold mb-4">Phase 2: Growth & Revenue (Months 7–18)</h3>
-        <p class="text-gray-700">Strategy: Scale acquisition, optimize economics.</p>
-        <ul class="list-disc pl-6 mt-2">
-          <li>500+ customers</li>
-          <li>MRR growth</li>
-          <li>CAC optimization</li>
-        </ul>
-      </div>
-      <div>
-        <h3 class="text-xl font-bold mb-4">Phase 3: Expansion & Exit (Months 19–24)</h3>
-        <p class="text-gray-700">Strategy: New markets, prepare for funding/exit.</p>
-        <ul class="list-disc pl-6 mt-2">
-          <li>New market launch</li>
-          <li>ARR milestone</li>
-          <li>Investor materials</li>
-        </ul>
-      </div>
-    `;
-  }
-  return `
-    <div>
-      <h3 class="text-xl font-bold mb-4">Phase 1: Preparation & Baseline (Months 1–12)</h3>
-      <p class="text-gray-700">Strategy: Baseline, partnerships, MEL setup.</p>
-      <ul class="list-disc pl-6 mt-2">
-        <li>Baseline survey</li>
-        <li>Stakeholder engagement</li>
-        <li>MEL framework</li>
-      </ul>
-    </div>
-    <div>
-      <h3 class="text-xl font-bold mb-4">Phase 2: Implementation & Scale (Months 13–24)</h3>
-      <p class="text-gray-700">Strategy: Scale interventions, monitor, adapt.</p>
-      <ul class="list-disc pl-6 mt-2">
-        <li>10,000+ beneficiaries</li>
-        <li>Mid-line evaluation</li>
-        <li>Policy advocacy</li>
-      </ul>
-    </div>
-    <div>
-      <h3 class="text-xl font-bold mb-4">Phase 3: Sustainability & Exit (Months 25–36)</h3>
-      <p class="text-gray-700">Strategy: Handover, final evaluation, sustainability plan.</p>
-      <ul class="list-disc pl-6 mt-2">
-        <li>Ownership transfer</li>
-        <li>End-line evaluation</li>
-        <li>Sustainability plan</li>
-      </ul>
-    </div>
-  `;
-}
-
-// ───────────────────────────────────────────────
 // Dashboard Role Choice & Views
 // ───────────────────────────────────────────────
 function showDashboardChoice() {
@@ -951,5 +961,8 @@ function renderAdminView() {
   let html = '';
   progressData.phases.forEach(phase => {
     const doneCount = phase.checklist.filter(c => c.done).length;
-    const progress = phase.checklist.length ? Math.round(doneCount / phase.checklist.length *
-
+    const progress = phase.checklist.length ? Math.round(doneCount / phase.checklist.length * 100) : 0;
+    html += `
+      <div class="border rounded-2xl p-6 bg-white shadow-sm mb-6">
+        <h4 class="font-bold text-lg">${phase.name}</h4>
+        <div class="h-4 bg-gray-200 rounded
