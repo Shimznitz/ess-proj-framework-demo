@@ -64,6 +64,9 @@
       <h2 id="question-text" class="text-2xl font-semibold mb-8 min-h-[4rem]"></h2>
       <div id="options" class="grid gap-5"></div>
       <div class="flex justify-between mt-12">
+	<button onclick="skipQuestionnaire()" class="px-8 py-3 bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium rounded-xl transition">
+            Skip Questionnaire
+          </button>
         <button id="btn-prev" onclick="prev()" class="px-8 py-3 text-gray-600 hover:text-gray-900 font-medium hidden">← Previous</button>
         <button id="btn-next" onclick="next()" class="px-10 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl">Next →</button>
       </div>
@@ -172,9 +175,9 @@
   <!-- ───── SCREEN 5 – Printable Full Framework ───── -->
   <div id="screen-printable" class="screen bg-white min-h-screen p-8 md:p-16">
     <div class="max-w-4xl mx-auto">
-      <button onclick="history.back()" class="back-btn mb-10">
-        ← Back
-      </button>
+      <button onclick="showScreen('screen-result')" class="back-btn mb-10">
+  ← Back to Results
+</button>
       <div class="flex justify-between items-center mb-12 border-b pb-6">
         <h1 id="print-title" class="text-4xl font-bold"></h1>
         <button onclick="window.print()"
@@ -344,6 +347,43 @@ function goBackToAnalysis() {
 function goBackToResult() {
   showScreen('screen-result');
 }
+
+// NEW: Skip Questionnaire
+// ───────────────────────────────────────────────
+function skipQuestionnaire() {
+  answers = new Array(10).fill(null);
+  const neutralScores = {A: 33, B: 33, C: 34};
+  analysisResult = {
+    scores: neutralScores,
+    primaryTrack: 'A' // arbitrary default – user can still upload & analyze
+  };
+  showScreen('screen-result');
+  renderSkippedQuestionnaireResult();
+}
+
+function renderSkippedQuestionnaireResult() {
+  document.getElementById('result-emoji').textContent = '⚖️';
+  document.getElementById('result-badge').textContent = 'Neutral / Skipped';
+  document.getElementById('result-title').textContent = 'Questionnaire was skipped';
+  document.getElementById('result-subtitle').textContent = 'All tracks are approximately equal. Upload a proposal to get a more accurate classification.';
+
+  const labels = ['Discovery (A)', 'Venture (B)', 'Impact (C)'];
+  const data = [33, 33, 34];
+
+  new Chart(document.getElementById('barChart'), {
+    type: 'bar',
+    data: {labels, datasets:[{data, backgroundColor:['#4f46e5','#10b981','#f59e0b']}]},
+    options: {indexAxis:'y', plugins:{legend:{display:false}}, scales:{x:{max:40}}}
+  });
+
+  new Chart(document.getElementById('pieChart'), {
+    type: 'doughnut',
+    data: {labels, datasets:[{data, backgroundColor:['#4f46e5','#10b981','#f59e0b']}]},
+    options: {cutout:'65%', plugins:{legend:{position:'bottom'}}}
+  });
+}
+
+
 
 // ───────────────────────────────────────────────
 // Printable Phases (MOVED UP so it's defined before use)
@@ -1084,4 +1124,3 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 </body>
 </html>
-
